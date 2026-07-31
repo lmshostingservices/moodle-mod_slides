@@ -1,0 +1,41 @@
+{{#tabs}}
+<div class="tab-pane fade show {{active}} {{#fullcontent}}fullcontent{{/fullcontent}}" id="tab-block-{{indexid}}"
+    role="tabpanel" aria-labelledby="v-pills-home-tab" data-forcelisten="{{forcelisten}}" data-forcetext="{{forcenext}}"
+    data-completed="{{completed}}" data-tabid={{id}} {{#initaudio}} data-initaudio="{{initaudio}}" {{/initaudio}}
+    {{#currentindex}} data-currentindex="{{currentindex}}" {{/currentindex}} data-viewed="{{viewed}}">
+    {{#nocontent}}
+    {{< core/notification_base}} {{$alertclass}}alert-info{{/alertclass}} {{/core/notification_base}} {{/nocontent}}
+        {{^nocontent}} {{!- Right side content image }} {{^direction}} <div class="show-afterloading"
+        id="content-section">
+        {{#title}}
+        <div class="title-block">
+            <h2>{{{title}}}</h2>
+        </div>
+        {{/title}}
+        {{> mod_ncttabs/content}}
+</div>
+{{/direction}}
+
+{{#contentimage}}
+<div class="media-block" id="image-section">
+    <div class="box py-3 generalbox center clearfix ncttabs-imagesection {{imageclass}}"
+        data-animation="{{{imageanimation}}}" {{#imageheight}}style="height:{{imageheight}};" {{/imageheight}}>
+        <img src="{{{contentimage}}}" alt="content image" class="img-responsive" role="presentation">
+    </div>
+</div>
+{{/contentimage}}
+
+{{!- Left side content image }}
+{{#direction}}
+<div class="show-afterloading {{#fullcontent}}fullcontent{{/fullcontent}}" id="content-section">
+    {{#title}}
+    <div class="title-block">
+        <h2>{{{title}}}</h2>
+    </div>
+    {{/title}}
+    {{> mod_ncttabs/content}}
+</div>
+{{/direction}}
+{{/nocontent}}
+</div>
+{{/tabs}}

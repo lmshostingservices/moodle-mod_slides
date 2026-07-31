@@ -1,0 +1,44 @@
+{{< mod_slides/slideitem }}
+    {{$slidebodycontents}}
+    <div class="slide-summary-contents">
+        {{#additional.heading}} {{{additional.heading.text}}} {{/additional.heading}}
+
+        {{#listencontent}}
+        <div class="slide-listen-contents">
+            {{$ listencontent}}
+                {{#contentitems}}
+                    <div class="listen-content-item box {{contentclasses}} animate__animated hide {{#viewed}}viewed{{/viewed}} {{#hidelisten}}hide-listen{{/hidelisten}}"
+                        data-animation="{{animation}}" data-index="{{contentitemindex}}"
+                        data-currentItem="{{#currentitem}}true{{/currentitem}}" data-completed="{{#itemcompleted}}true{{/itemcompleted}}"
+                        {{#notavailable}} data-target="notavailable" {{/notavailable}}>
+
+                        <div class="summary-slide-content">
+
+                            <div class="slide-content-block">
+                                <p class="summary-count"> <span>{{contentitemindex}}</span></p>
+                                <div class="summary-block"> {{{content}}}
+                                    {{#listenaudio}}
+                                    <div class="listenaudio {{#hideaudio}}hide-audio{{/hideaudio}}" data-target="completion-autofont">
+                                        <audio controls="controls">
+                                            <source src="{{listenaudio}}">
+                                        </audio>
+                                    </div>
+                                    {{/listenaudio}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {{/contentitems}}
+            {{/listencontent}}
+
+            {{#clicktoview}}
+            <div class="clicktoview box hide {{$contentclass}}{{contentclass}}{{/contentclass}}" data-animation="{{animation}}">
+                <p class="content">{{{clicktoviewstring}}}</p>
+            </div>
+            {{/clicktoview}}
+        </div>
+        {{/listencontent}}
+
+    </div>
+    {{/slidebodycontents}}
+{{/mod_slides/slideitem }}

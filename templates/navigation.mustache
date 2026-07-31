@@ -1,0 +1,24 @@
+<nav aria-label="Page navigation" class="navigation-block show" id="tab-nav" role="tabpanel">
+    <ul class="pagination justify-content-center">
+        <li class="page-item">
+            <a class="page-link " href="{{{backurl}}}">{{#str}}back, ncttabs{{/str}}</a>
+        </li>
+        <li class="instructions">
+            {{#tabs}}
+            <p class="instruction-content hide tab-block-{{indexid}}">{{#islasttab}} {{feedbackstr}} {{/islasttab}}
+                {{^islasttab}} {{tabsfeedbackstr}} {{/islasttab}}</p>
+            {{/tabs}}
+        </li>
+
+        {{#shownextbtn}}
+        <li class="page-item">
+            {{^disablenextbtn}}
+            <a class="page-link next-btn" href="{{{nexturl}}}">{{#str}}next,ncttabs{{/str}}</a>
+            {{/disablenextbtn}}
+            {{#disablenextbtn}}
+            <a class="page-link next-btn  disabled " href="#mod-nct-tabs">{{#str}}next,ncttabs{{/str}}</a>
+            {{/disablenextbtn}}
+        </li>
+        {{/shownextbtn}}
+    </ul>
+</nav>

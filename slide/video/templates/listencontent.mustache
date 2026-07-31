@@ -1,0 +1,23 @@
+{{$ listencontent}}
+    {{#contentitems}}
+    <div class="listen-content-item {{contentclasses}} {{^viewed}}hide{{/viewed}} {{#viewed}}viewed{{/viewed}} {{#hidelisten}}hide-listen{{/hidelisten}}"
+        data-animation="{{animation}}"
+        data-index="{{contentitemindex}}"
+        data-currentItem="{{#currentitem}}true{{/currentitem}}">
+
+        <div class="video-block">
+            <video class="d-block w-100" src="{{{posterimage}}}" alt="posterimage">
+                <source src="{{{posterimage}}}">
+            </video>
+        </div>
+
+        {{#listenaudio}}
+        <div class="listenaudio et{{^showaudio}}hide-audio{{/showaudio}}">
+            <audio controls="controls">
+                <source src="{{listenaudio}}">
+            </audio>
+        </div>
+        {{/listenaudio}}
+    </div>
+    {{/contentitems}}
+{{/listencontent}}

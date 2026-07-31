@@ -1,0 +1,59 @@
+{{< mod_slides/slideitem }}
+
+    {{$slidebodycontents}}
+    <div class="slide-flip-contents {{#listencontent.completed}}show-audio{{/listencontent.completed}}">
+
+        {{#listencontent}}
+        <div class="slide-listen-contents">
+            {{#contentitems}}
+            <div class="listen-content-item box {{contentclasses}} animate__animated hide {{#viewed}}viewed{{/viewed}} {{#hidelisten}}hide-listen{{/hidelisten}}"
+                data-animation="{{animation}}" data-index="{{contentitemindex}}"
+                data-currentItem="{{#currentitem}}true{{/currentitem}}" data-completed="{{#itemcompleted}}true{{/itemcompleted}}"
+                {{#notavailable}} data-target="notavailable" {{/notavailable}}>
+
+                <div class="flip-card-content">
+                    <!-- Flip card block -->
+                    <div class="flip-card-block {{#isflipped}} flip-completed {{/isflipped}}">
+                        <div class="flip-content-block slides-view-block flip-question-side">
+                            <!-- Options block -->
+                            <div class="slides-option">
+                                <i class="fa fa-check"></i>
+                            </div>
+                            <!-- End of Options block -->
+                            {{#hasfrontimage}}
+                            <!-- Front image (optional) -->
+                            <img src="{{frontimageurl}}" class="flip-front-image" alt="" />
+                            {{/hasfrontimage}}
+                            <!-- Question block -->
+                            <div class="content">
+                                {{{content}}}
+                            </div>
+                        </div>
+                        <div class="flip-content-block slides-view-block flip-feedback-side">
+                            <!-- Options block -->
+                            <div class="slides-option">
+                                <i class="fa fa-check"></i>
+                            </div>
+                            <!-- End of Options block -->
+                            <!-- Answer Flip card -->
+                            <div class="content">{{{feedback}}}</div>
+                        </div>
+                    </div>
+                    <!-- End of Flip card block -->
+                    {{#listenaudio}}
+                    <div class="listenaudio {{#hideaudio}}hide-audio{{/hideaudio}}" data-target="completion-autofont">
+                        <audio controls="controls">
+                            <source src="{{listenaudio}}">
+                        </audio>
+                    </div>
+                    {{/listenaudio}}
+                </div>
+            </div>
+            {{/contentitems}}
+        </div>
+        {{/listencontent}}
+
+    </div>
+    {{/slidebodycontents}}
+
+{{/mod_slides/slideitem }}

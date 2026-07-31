@@ -1,0 +1,63 @@
+{{< mod_slides/slideitem }}
+
+    {{$slidebodycontents}}
+    <div class="slide-matching-contents">
+
+        {{#listencontent}}
+        <div class="slide-listen-contents user-select-none">
+
+            {{< mod_slides/listencontent}}
+                {{$content}}
+                    <!-- Matching Activity block -->
+                    <div class="activity-block">
+                        <!-- Question block -->
+                        <div class="slides-que-block">
+                            <h4>{{{content}}}</h4>
+                        </div>
+                        <!-- End of Question block -->
+
+                        <!-- Drag & Drop block -->
+                        <div class="slides-ans-block">
+                            <!-- Drop block -->
+                            <div class="slides-drop-block place{{contentitemindex}}">
+
+                                <div class="drophome">
+                                    <span class="slides-drop-zone {{^viewed}}active{{/viewed}} drop place{{contentitemindex}} group1" data-dragzone="{{contentitemindex}}"></span>
+                                    {{#viewed}}
+                                    <span class="draghome choice{{contentitemindex}} group1 placed inplace1" data-answercontentid="{{answercontentid}}">{{{answer}}}</span>
+                                    {{/viewed}}
+                                </div>
+
+                                <div class="slides-option {{#viewed}} matched {{/viewed}}">
+                                    <i class="fa fa-check"></i>
+                                </div>
+
+                            </div>
+                            <!-- End of Drop block -->
+                            {{^viewed}}
+                            <!-- Drag block -->
+                            <div class="slides-drag-block draggrouphomes1 group1">
+                                <span class="draghome choice{{contentitemindex}} group1" data-answercontentid="{{answercontentid}}">{{{answer}}}</span>
+                            </div>
+                            {{/viewed}}
+                            <!-- End of Drag block -->
+                        </div>
+                    </div>
+                    <!-- End of Answer block -->
+                {{/content}}
+            {{/ mod_slides/listencontent}}
+        </div>
+        {{/listencontent}}
+
+        {{#listencontent}}
+        <div class="dragdropvalues">
+            {{#contentitems}}
+                <input type="hidden" id="place-{{contentitemindex}}" class="placeinput group1 place{{contentitemindex}}" value="0">
+            {{/contentitems}}
+        </div>
+        {{/listencontent}}
+
+    </div>
+    {{/slidebodycontents}}
+
+{{/mod_slides/slideitem }}

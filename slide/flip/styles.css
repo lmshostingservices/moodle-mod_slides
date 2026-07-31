@@ -1,0 +1,107 @@
+/* Flip card slides */
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item.slide-flip.content-flipped {
+    height: 100%;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item.slide-flip.content-flipped .slide-flip {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item.slide-flip.content-flipped .slide-flip .slide-flip-contents {
+    height: 100%;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item.slide-flip .slide-flip {
+    height: 100%;
+    overflow: auto;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item.slide-flip .slide-flip-contents,
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item.slide-flip .slide-listen-contents {
+    height: 100%;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item .slide-flip-contents .slide-listen-contents {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-evenly;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide) {
+    min-width: 150px;
+    min-height: 150px;
+    width: 100%;
+    margin: 5px;
+    display: flex;
+    flex-direction: column;
+    flex-basis: 30%;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide) .flip-card-content {
+    min-height: 100px;
+    height: 100%;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    background: #fff;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide) .flip-card-content .flip-card-block {
+    text-align: center;
+    position: relative;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide) .flip-card-content .flip-card-block.flip-completed .flip-content-block .slides-option {
+    visibility: visible;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide) .flip-card-content .flip-card-block .flip-content-block.flip-feedback-side {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    visibility: hidden;
+    display: none;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide) .flip-card-content .flip-card-block .flip-content-block .slides-option {
+    width: 30px;
+    height: 30px;
+    color: #fff;
+    border-radius: 50%;
+    background: var(--success);
+    margin: 0 auto 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide) .flip-card-content.child-flipped {
+    border-color: var(--primary);
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide) .flip-card-content.child-flipped .flip-card-block.flipped .flip-feedback-side {
+    visibility: visible;
+    display: flex;
+    flex-direction: column;
+    position: static;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide) .flip-card-content.child-flipped .flip-card-block.flipped .flip-question-side {
+    display: none;
+}
+
+@media (max-width: 910px) {
+    .nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide) {
+        flex-basis: 29%;
+    }
+}
+
+@media (max-width: 630px) {
+    .nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide) {
+        flex-basis: 45%;
+    }
+}
+
+/* Flip card front image styles */
+.flip-front-image {
+    width: 100%;
+    max-height: 180px;
+    object-fit: contain;
+    margin-bottom: 12px;
+    display: block;
+}
+/* End of Flip card slides */

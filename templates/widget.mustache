@@ -1,0 +1,82 @@
+<div class="nct-slides-view-content onloading" id="mod-nct-slides">
+    <div class="nctslides-content-wrapper">
+        <div class="slides-parent">
+            <div class="slides-list" >
+                <div class="nct-slides-carousel carousel slide" data-wrap="false"  data-interval="false" data-ride="carousel" id="nct-slides-carousel" style="{{{slidecontainerstyles}}}">
+                    <div class="carousel-inner h-100" >
+                        <!-- Slide list. -->
+                        {{#slides}} {{{.}}} {{/slides}}
+                        {{^slides}} <p class="notconfigured-slides">{{#str}} noslidesconfigured, mod_slides {{/str}}</p>{{/slides}}
+                    </div>
+
+                    {{^noslide}}
+                    <!-- Slides navigation -->
+                        {{^notnav}}
+                        <div class="slides-navigation">
+                            <div class="carousel-control">
+                                <a class="carousel-control-prev" href="#nct-slides-carousel" role="button" data-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="carousel-control carousel-control-next" href="#nct-slides-carousel" role="button" data-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </div>
+                        </div>
+                        {{/notnav}}
+
+                        <div class="slides-pagination-dots">
+                            <ol class="carousel-indicators">
+                                {{#pagination}}
+                                <li data-target="#nct-slides-carousel" data-slide-to="{{slideto}}" data-slideinstanceid="{{id}}" class="{{#viewitem}}active-item{{/viewitem}}">{{slideno}}</li>
+                                {{/pagination}}
+                            </ol>
+                        </div>
+
+                        {{^notnav}}
+                        {{^viewoption}}
+                        <div class="slides-navigation forcenext-button">
+                            <div class="carousel-control">
+                                <a data-slide-target="forceprevbtn" data-slide-action="" class="carousel-control-prev" href="#nct-slides-carousel" role="button" data-slide="prev">
+                                    <!-- <span class="carousel-control-prev-icon" aria-hidden="true"></span> -->
+                                    <span class="">{{#str}}previous, mod_slides{{/str}}</span>
+                                </a>
+                                <a data-slide-target="forcenextbtn" data-slide-action="" class="carousel-control-next" href="#nct-slides-carousel" role="button" data-slide="next">
+                                    <!-- <span class="carousel-control-next-icon" aria-hidden="true"></span> -->
+                                    <span class="">{{#str}}next, mod_slides{{/str}}</span>
+                                </a>
+                                <a data-slide-target="finishbtn" data-slide-action="" class="carousel-control-finish" href="{{{nextmoduleurl}}}" role="button">
+                                    <!-- <span class="carousel-control-next-icon" aria-hidden="true"></span> -->
+                                    <span class="">{{#str}}finish, mod_slides{{/str}}</span>
+                                </a>
+                            </div>
+                        </div>
+                        {{/viewoption}}
+                        {{/notnav}}
+
+                    {{/noslide}}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{{#js}}
+require(['jquery'], function() {
+    setTimeout(() => document.body.classList.remove("nctslidesview-onloading"), 1000);
+
+    // Make the first slide as active.
+    if (document.querySelector('.nct-slides-carousel .slide-item') !== null) {
+        document.querySelector('.nct-slides-carousel .slide-item').classList.add('active');
+        document.querySelector('.carousel-indicators li').classList.add('active');
+    }
+})
+{{/js}}
+
+<style>
+    .slides-navigation.forcenext-button {
+        position: relative;
+    }
+</style>

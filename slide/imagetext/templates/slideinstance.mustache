@@ -1,0 +1,31 @@
+{{< mod_slides/slideitem }}
+    {{$slidebodycontents}}
+    <div class="slide-imagetext-contents row">
+
+        {{!- Left side content image }}
+        {{^additional.imagedirection}}
+            {{< mod_slides/listencontentlist}}
+                {{$blockclasses}}{{#fullcontent}}col-12{{/fullcontent}}{{^fullcontent}}col-7{{/fullcontent}}{{#hidecontentsection}}d-none{{/hidecontentsection}}{{/blockclasses}}
+            {{/mod_slides/listencontentlist}}
+        {{/additional.imagedirection}}
+
+
+        {{#contentimage}}
+        <div class="{{#fullimage}}col-12{{/fullimage}}{{^fullimage}}col-5{{/fullimage}}" id="image-section">
+            <div class="box generalbox center clearfix slides-imagesection img-block {{#imageanimation}}animate__animated{{/imageanimation}}" data-target="listencontentimage" data-animation="{{imageanimation}}" style="height:{{contentimageheight}};">
+                <img class="d-block w-100" src="{{{contentimage}}}" alt="{{name}}" >
+            </div>
+        </div>
+        {{/contentimage}}
+
+
+        {{!- Right side content image }}
+        {{#additional.imagedirection}}
+            {{< mod_slides/listencontentlist}}
+                {{$blockclasses}}{{#fullcontent}}col-12{{/fullcontent}}{{^fullcontent}}col-7{{/fullcontent}}{{#hidecontentsection}}d-none{{/hidecontentsection}}{{/blockclasses}}
+            {{/mod_slides/listencontentlist}}
+        {{/additional.imagedirection}}
+
+    </div>
+    {{/slidebodycontents}}
+{{/mod_slides/slideitem }}

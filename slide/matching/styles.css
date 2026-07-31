@@ -1,0 +1,153 @@
+/* Matching activity slides */
+.slides-ans-block .slides-option {
+    visibility: hidden;
+}
+.slides-ans-block .slides-option.matched {
+    visibility: visible;
+}
+
+.slide-matching-contents {
+    height: calc(100% - 40px);
+    overflow: auto;
+}
+.slide-matching-contents .draghome {
+    width: 100%;
+    display: inline-block;
+    text-align: left;
+    background: transparent;
+    padding: .5rem;
+    cursor: move;
+}
+.slide-matching-contents .draghome.dragplaceholder {
+    display: none;
+}
+.slide-matching-contents .draghome.dragplaceholder.active {
+    visibility: hidden;
+    display: inline-block;
+}
+.slide-matching-contents .draghome.beingdragged {
+    border: 1px solid #fff;
+    background: #fff;
+    box-shadow: 0 0 5px 1px rgba(211, 211, 211, 0.3);
+    position: absolute;
+    top: 0;
+    z-index: 3;
+}
+.slide-matching-contents .draghome.active + .beingdragged {
+    width: 100%;
+}
+.slide-matching-contents .drophome {
+    min-width: 300px;
+    height: 100%;
+    border-radius: 5px;
+    border: 1px dashed var(--primary);
+    background-color: transparent;
+    display: block;
+    position: relative;
+}
+.slide-matching-contents .drophome span.draghome {
+    background: #fff;
+    height: 100%;
+}
+.slide-matching-contents .drop {
+    display: none;
+}
+.slide-matching-contents .drop.active {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    display: inline-block;
+}
+.slide-matching-contents .slides-drop-block .valid-drag-over-drop + .beingdragged {
+    width: 100%;
+}
+.slide-matching-contents .slide-listen-contents {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.nct-slides-view-content .nctslides-content-wrapper .carousel-item .activity-block {
+    margin-bottom: 20px;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-item .activity-block .slides-que-block h4 {
+    font-size: 16px;
+    font-weight: normal;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    background: #fff;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-item .activity-block .slides-ans-block {
+    display: flex;
+    gap: 30px;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-item .activity-block .slides-ans-block .slides-drop-block {
+    max-width: 47%;
+    width: 100%;
+    position: relative;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-item .activity-block .slides-ans-block .slides-drop-block p {
+    height: 45px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    background: #fff;
+    padding: 10px;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-item .activity-block .slides-ans-block .slides-drop-block .slides-option {
+    position: absolute;
+    top: 7px;
+    right: -15px;
+    z-index: 3;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-item .activity-block .slides-ans-block .slides-drop-block .slides-option i {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+    line-height: 30px;
+    color: #fff;
+    text-align: center;
+    border-radius: 50%;
+    background: var(--success);
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-item .activity-block .slides-ans-block .slides-drop-block .draghome.placed {
+    border: 1px solid #fff;
+    border-radius: 5px;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-item .activity-block .slides-ans-block .slides-drag-block {
+    max-width: 49%;
+    width: 100%;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-item .activity-block .slides-ans-block .slides-drag-block .draghome {
+    height: 100%;
+    text-align: left;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-item .activity-block .slides-ans-block .slides-drag-block .draghome.unplaced {
+    display: flex;
+    align-items: center;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-item p {
+    margin-bottom: 0;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-item .slide-content-block {
+    border: 1px solid #f4f4f4;
+    border-radius: 5px;
+    background: #fff;
+    padding: 15px 20px;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-item.slide-matching {
+    height: 100%;
+}
+
+.nct-slides-carousel .draghome.dragplaceholder.active {
+    visibility: hidden;
+    display: inline-block;
+}
+.nct-slides-carousel .slide-matching {
+    height: 100%;
+}

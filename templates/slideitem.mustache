@@ -1,0 +1,19 @@
+<div class="carousel-item slide-item slide-{{slidetype}} {{#active}}active{{/active}}" id="{{uniqid}}"
+    data-slidesid="{{slidesid}}"
+    data-slideinstanceid="{{slideinstanceid}}"
+    data-slidetype="{{slidetype}}"
+    data-slideindex="{{slideindex}}"
+    data-slidecompletion="{{slidecompletion}}"
+>
+    {{$title}}{{#title}}<div class="slide-title">{{{title}}}</div>{{/title}}{{/title}}
+
+    <div class="slide-{{slidetype}} slide-parent-section" data-target="slideautofontparent">
+        {{$ slidebodycontents}}
+        {{> mod_slides/listencontentlist}}
+        {{/slidebodycontents}}
+    </div>
+
+    {{#styles}}
+    {{{styles}}}
+    {{/styles}}
+</div>

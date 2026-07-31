@@ -1,0 +1,81 @@
+/* Summary slides */
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item .title-block h3 {
+    font-size: 18px;
+    border: 1px solid #f4f4f4;
+    border-radius: 5px;
+    background: #fff;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item p {
+    margin-bottom: 0;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item.slide-summary {
+    overflow: auto;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item.slide-summary .slide-summary {
+    height: 100%;
+    overflow: auto;
+    padding: 0 7px;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item.slide-summary .slide-summary-contents > p {
+    font-weight: bold;
+    color: #000;
+    border-radius: 5px;
+    background: #fff;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item.slide-summary .slide-summary-contents .listen-content-item {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item.slide-summary .slide-summary-contents .listen-content-item .summary-slide-content .slide-content-block {
+    display: flex;
+    align-items: center;
+    border: 0;
+    background: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item.slide-summary .slide-summary-contents .listen-content-item .summary-slide-content .slide-content-block .summary-count {
+    max-width: 50px;
+    width: 100%;
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--primary);
+    text-align: center;
+    display: block;
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item.slide-summary .slide-summary-contents .listen-content-item .summary-slide-content .slide-content-block .summary-block {
+    width: 100%;
+    border-radius: 5px;
+    background: #fff;
+    padding: 15px;
+}
+/* End of Summary slides */
+
+.slide-item[data-slidetype="summary"] #image-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slide-item[data-slidetype="summary"] #image-section .slides-imagesection {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+.slide-item[data-slidetype="summary"] #image-section .slides-imagesection img {
+    width: 100%;
+    height: 100%;
+    object-position: top;
+    object-fit: cover;
+    transform: translate3d(0px, 0, 0);
+}

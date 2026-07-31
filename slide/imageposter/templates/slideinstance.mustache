@@ -1,0 +1,16 @@
+{{< mod_slides/slideitem }}
+    {{$slidebodycontents}}
+    <div class="slide-imageposter-contents">
+<!--
+        {{#introimage}}
+        <div class="img-block {{#imageanimation}}animate__animated{{/imageanimation}}" data-target="listencontentimage" data-animation="{{imageanimation}}" style="height:{{introimageheight}}px;">
+            <img class="d-block w-100" src="{{{introimage}}}" alt="Second slide" >
+        </div>
+        {{/introimage}}
+ -->    {{#posterimage}}
+        {{> mod_slides/listencontentlist}}
+        {{/posterimage}}
+
+    </div>
+    {{/slidebodycontents}}
+{{/mod_slides/slideitem }}

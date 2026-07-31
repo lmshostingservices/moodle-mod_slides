@@ -1,0 +1,17 @@
+
+
+{{#listencontent}}
+<div class="slide-listen-contents {{#clicktoview}}click-to-view-box-available{{/clicktoview}} {{$blockclasses}}{{blockclasses}}{{/blockclasses}}">
+
+    {{$ listencontent}}
+    {{> mod_slides/listencontent}}
+    {{/listencontent}}
+
+    {{#clicktoview}}
+    <div class="clicktoview box hide {{$contentclass}}{{contentclass}}{{/contentclass}}" data-animation="{{animation}}">
+        <p class="content">{{{clicktoviewstring}}}</p>
+    </div>
+    {{/clicktoview}}
+
+</div>
+{{/listencontent}}

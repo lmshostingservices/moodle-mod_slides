@@ -1,0 +1,21 @@
+{{$ listencontent}}
+    {{#contentitems}}
+        <div class="listen-content-item box {{contentclasses}} animate__animated hide {{#viewed}}viewed{{/viewed}} {{#hidelisten}}hide-listen{{/hidelisten}} {{#hidecontent}}d-none{{/hidecontent}}"
+            data-animation="{{animation}}"
+            data-index="{{contentitemindex}}"
+            data-currentItem="{{#currentitem}}true{{/currentitem}}"
+            data-completed="{{#itemcompleted}}true{{/itemcompleted}}"
+            {{#notavailable}} data-target="notavailable" {{/notavailable}}>
+
+            {{$content}} {{{content}}} {{/content}}
+
+            {{#listenaudio}}
+            <div class="listenaudio {{#hideaudio}}hide-audio{{/hideaudio}}" data-target="completion-autofont">
+                <audio controls="controls">
+                    <source src="{{listenaudio}}">
+                </audio>
+            </div>
+            {{/listenaudio}}
+        </div>
+    {{/contentitems}}
+{{/listencontent}}

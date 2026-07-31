@@ -1,0 +1,88 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle. If not, see
+    <http: //www.gnu.org/licenses />.
+}}
+
+{{!
+    @template mod_slides/editor
+
+    Template for the content editor view with list of slides in manage mode.
+}}
+
+<div class="nct-mod-slides-content limitedwidth slide-editor">
+    <div class="loading-icon-container"></div>
+    <div class="slides-wrapper">
+        <div class="slides">
+            <ul class="slides-slide-list">
+                {{#slides}}
+                <li class="nctslides-slide-parent" data-slidetype="{{info.shortname}}" data-drag-type="move" data-slideinstanceid="{{slideinstanceid}}">
+
+                    <div class="slide-item {{^data.status}} text-muted disabled {{/data.status}}"
+                        data-slidetypeid="{{data.slidetypeid}}"
+                        data-slideshortname="{{info.shortname}}"
+                        data-slideinstanceid="{{slideinstanceid}}"
+                        data-slidesid="{{data.slidesid}}"
+                        data-cmid="{{cmid}}"
+                        data-visibility="{{#data.status}}true{{/data.status}}">
+
+                        <div class="slide-box">
+                            <div class="slide-item-details move-slide d-inline-flex w-100">
+                                <div class="slide-icon move-slide">
+                                    <span>{{{info.icon}}}</span>
+                                </div>
+                                <div class="slide-title move-slide">
+                                    {{{name}}} {{^name}}({{{info.name}}}){{/name}}
+                                </div>
+                            </div>
+                            <div class="slide-actions">
+                                <ul class="actions-list">
+                                    <li data-action="move" class="action-item move-slide" title="{{#str}}move,slides{{/str}}" data-toggle="tooltip">
+                                        <i class="fa fa-arrows"></i>
+                                    </li>
+                                    <li data-action="edit" class="action-item" title="{{#str}}slideupdate,slides{{/str}}" data-toggle="tooltip" >
+                                        <a href="{{{editurl}}}"><i class="fa fa-gear"></i></a>
+                                    </li>
+                                    <li data-action="duplicate" class="action-item" title="{{#str}}duplicate,slides{{/str}}" data-toggle="tooltip">
+                                        <a href="{{{duplicateurl}}}"><i class="fa fa-copy"></i></a>
+                                    </li>
+                                    <li data-action="delete" class="action-item"><i class="fa fa-trash"></i></li>
+                                    <!--
+                                    <li data-action="moveup" class="action-item"><i class="fa fa-arrow-up"></i></li>
+                                    <li data-action="movedown" class="action-item"><i class="fa fa-arrow-down"></i></li> -->
+                                    <li data-action="status" class="action-item">
+                                        {{#data.status}}
+                                        <i class="fa fa-eye"></i>
+                                        {{/data.status}}
+                                        {{^data.status}}
+                                        <i class="fa fa-eye-slash"></i>
+                                        {{/data.status}}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </li>
+                {{/slides}}
+            </ul>
+
+            <div class="slides-addslide" data-position="bottom">
+                <span><i class="fa fa-plus"> </i></span>
+            </div>
+
+        </div>
+    </div>
+</div>
