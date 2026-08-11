@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace mod_slides;
 
@@ -6,12 +20,14 @@ use moodle_url;
 use renderer_base;
 
 class widget implements \templatable, \renderable {
-
     /**
      * Coursemodule instance
      *
      * @var cminfo
-     */
+ * @package    mod_slides
+ * @copyright  2026 LMS-Labs
+ * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU GPL v3 or later
+ */
     protected $cm;
 
     /**
@@ -194,7 +210,7 @@ class widget implements \templatable, \renderable {
         $pagination = $slides;
         $completed = array_keys($widgets);
         $i = 0;
-        array_walk($pagination, function(&$slide) use ($completed, &$i) {
+        array_walk($pagination, function (&$slide) use ($completed, &$i) {
             $slide->viewitem = in_array($slide->id, $completed) ? true : false;
             $slide->slideto = $i;
             $i++;

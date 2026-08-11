@@ -17,7 +17,7 @@
 /**
  * This file contains the backup code for the slidetype_summary plugin.
  *
- * @package    slidetype_summary
+ * @package    mod_slides
  * @copyright  2024 National Corporate Training Pty Ltd (https://nct.net.au/) <believe@nct.net.au>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,7 +28,6 @@
  * This just adds its filearea to the annotations and records the number of files.
  */
 class backup_slidetype_summary_subplugin extends backup_subplugin {
-
     /**
      * Returns the subplugin information to attach to h5p element
      * @return backup_subplugin_element

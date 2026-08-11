@@ -35,7 +35,6 @@ use core_completion\activity_custom_completion;
  * Custom activity completion defined for content designer.
  */
 class custom_completion extends activity_custom_completion {
-
     /**
      * Fetches the completion state for a given completion rule.
      *

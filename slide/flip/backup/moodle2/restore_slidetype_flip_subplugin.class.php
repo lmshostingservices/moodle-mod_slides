@@ -17,7 +17,7 @@
 /**
  * This file contains the restore code for the slidetype_flip plugin.
  *
- * @package    slidetype_flip
+ * @package    mod_slides
  * @copyright  2024 National Corporate Training Pty Ltd (https://nct.net.au/) <believe@nct.net.au>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,7 +28,6 @@
  * Provides the necessary information needed to restore slidetype_flip subplugin.
  */
 class restore_slidetype_flip_subplugin extends restore_subplugin {
-
     protected function define_slides_subplugin_structure() {
         $paths = [];
 

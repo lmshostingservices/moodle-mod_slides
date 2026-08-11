@@ -30,7 +30,6 @@ require_once($CFG->dirroot . '/mod/slides/backup/moodle2/backup_slides_stepslib.
  * Step to perform instance database backup.
  */
 class backup_slides_activity_task extends backup_activity_task {
-
     /**
      * No specific settings for this activity
      */

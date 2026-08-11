@@ -20,9 +20,11 @@
  * @package    mod_slides
  * @copyright  2024 National Corporate Training Pty Ltd (https://nct.net.au/) <believe@nct.net.au>
  * @author     LMSACE Dev Team <lmsace.com>
+ * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU GPL v3 or later
  */
 
 require_once('../../config.php');
+require_login();
 require_once($CFG->dirroot . '/mod/slides/lib.php');
 
 // Course Module ID.

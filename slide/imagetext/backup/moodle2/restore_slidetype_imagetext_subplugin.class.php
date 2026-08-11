@@ -17,8 +17,9 @@
 /**
  * This file contains the restore code for the feedback_file plugin.
  *
- * @package    slidetype_imagetext
+ * @package    mod_slides
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2026 LMS-Labs
  */
 
 /**
@@ -27,7 +28,6 @@
  * Provides the necessary information needed to restore element_h5p subplugin.
  */
 class restore_slidetype_imagetext_subplugin extends restore_subplugin {
-
     protected function define_slides_subplugin_structure() {
         $paths = array();
 

@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace mod_slides;
 
@@ -13,14 +27,16 @@ use xmldb_table;
 // use slidetype_introduction\slideinstance as Slidetype_introductionSlideinstance;
 
 abstract class slidetype implements slidetype_interface, \templatable, \renderable {
-
     public const LISTORDER = -1;
 
     /**
      * Context data for the current module.
      *
      * @var context_module
-     */
+ * @package    mod_slides
+ * @copyright  2026 LMS-Labs
+ * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU GPL v3 or later
+ */
     protected $context;
 
     /**
@@ -391,7 +407,7 @@ abstract class slidetype implements slidetype_interface, \templatable, \renderab
         $formdata->slideinstanceid = 0; */
 
        /*  if (isset($formdata->content)) {
-            array_walk($formdata->content, function(&$item) {
+            array_walk($formdata->content, function (&$item) {
                 $item->id = 0;
                 if (isset($item->slideinstanceid)) {
                     unset($item->slideinstanceid); //= 0;

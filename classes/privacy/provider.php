@@ -15,12 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * mod_slides file.
+ * Privacy Subsystem implementation for mod_slides.
  *
  * @package    mod_slides
  * @copyright  2026 LMS-Labs
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU GPL v3 or later
  */
 
-$plugin->component = 'slidetype_matching';
-$plugin->version = 2026071700100;
+namespace mod_slides\privacy;
+
+/**
+ * Privacy Subsystem for mod_slides implementing null_provider.
+ *
+ * @package mod_slides
+ */
+class provider implements \core_privacy\local\metadata\null_provider {
+    /**
+     * Returns a reason why no user data is stored.
+     *
+     * @return string
+     */
+    public static function get_reason(): string {
+        return 'privacy:metadata';
+    }
+}

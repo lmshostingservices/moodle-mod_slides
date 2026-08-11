@@ -26,7 +26,6 @@
  * Define the complete slides structure for backup, with file and id annotations.
  */
 class backup_slides_activity_structure_step extends backup_activity_structure_step {
-
     /**
      * Define backup steps structure.
      */

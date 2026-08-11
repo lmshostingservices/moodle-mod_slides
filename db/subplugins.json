@@ -1,5 +1,5 @@
 {
-    "subplugintypes": {
-        "slidetype": "mod\/slides\/slide"
+    "plugintypes": {
+        "slidetype": "mod/slides/slide"
     }
 }

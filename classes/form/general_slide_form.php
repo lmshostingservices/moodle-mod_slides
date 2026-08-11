@@ -46,7 +46,6 @@ require_once($CFG->dirroot.'/lib/formslib.php');
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class general_slide_form extends \moodleform {
-
     /**
      * Make the custom data as public varaible to access on the slides forms.
      *

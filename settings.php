@@ -20,6 +20,7 @@
  * @package    mod_slides
  * @copyright  2024 National Corporate Training Pty Ltd (https://nct.net.au/) <believe@nct.net.au>
  * @author     LMSACE Dev Team <lmsace.com>
+ * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
@@ -28,7 +29,7 @@ if ($hassiteconfig) {
 
     require_once("$CFG->libdir/resourcelib.php");
 
-    $settings->add(new admin_setting_heading('slidesdefaults', get_string('modeditdefaults', 'admin'), get_string('condifmodeditdefaults', 'admin')));
+    $settings->add(new admin_setting_heading('mod_slides/slidesdefaults', get_string('modeditdefaults', 'admin'), get_string('condifmodeditdefaults', 'admin')));
 
     $settings->add(new admin_setting_configtext(
         'slides/imageheight',

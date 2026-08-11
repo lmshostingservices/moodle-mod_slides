@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace slidetype_summary;
 
@@ -7,7 +21,6 @@ use mod_slides\slideinstance as Mod_slidesSlideinstance;
 use stdClass;
 
 class slide extends \mod_slides\slidetype implements \mod_slides\dynamicsplit_interface {
-
     public const SHORTNAME = 'summary';
 
     public const LISTORDER = 7;
@@ -61,7 +74,10 @@ class slide extends \mod_slides\slidetype implements \mod_slides\dynamicsplit_in
      * This slide doesn't supports the custom table.
      *
      * @return bool
-     */
+ * @package    mod_slides
+ * @copyright  2026 LMS-Labs
+ * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU GPL v3 or later
+ */
     protected function supports_custom_table() : bool {
         return true;
     }

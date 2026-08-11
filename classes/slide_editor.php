@@ -31,7 +31,6 @@ use moodle_url;
  * Mod contnet designer slide_editor class.
  */
 class slide_editor extends widget {
-
     protected function generate_slidelist_editorinfo() : array {
 
         // Get the list of slide instances added for this module slides instance.

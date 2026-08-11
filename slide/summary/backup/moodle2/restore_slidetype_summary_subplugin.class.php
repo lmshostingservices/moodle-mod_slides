@@ -17,8 +17,9 @@
 /**
  * This file contains the restore code for the slidetype_summary plugin.
  *
- * @package    slidetype_summary
+ * @package    mod_slides
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2026 LMS-Labs
  */
 
 /**
@@ -27,7 +28,6 @@
  * Provides the necessary information needed to restore slidetype_summary subplugin.
  */
 class restore_slidetype_summary_subplugin extends restore_subplugin {
-
     /**
      * Returns the paths to be handled by the subplugin.
      * @return array

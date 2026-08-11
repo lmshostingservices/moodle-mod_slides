@@ -31,7 +31,6 @@ require_once($CFG->dirroot.'/mod/slides/lib.php');
  * NCT slides module form.
  */
 class mod_slides_mod_form extends moodleform_mod {
-
     /**
      * Define the mform elements.
      * @return void

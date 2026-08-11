@@ -23,6 +23,7 @@
  */
 
 require_once('../../config.php');
+require_login();
 require_once(__DIR__.'/lib.php');
 
 $id = required_param('id', PARAM_INT);    // Course Module ID.

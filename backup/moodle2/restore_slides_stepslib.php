@@ -30,7 +30,6 @@
  * Structure step to restore slides activity.
  */
 class restore_slides_activity_structure_step extends restore_activity_structure_step {
-
     /**
      * Restore steps structure definition.
      */
