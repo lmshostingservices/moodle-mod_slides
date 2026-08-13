@@ -160,6 +160,7 @@ $string['videomute'] = 'Mute video';
 $string['listenaudioconfig'] = 'Listen audio';
 $string['previous'] = 'Previous';
 $string['next'] = 'Next';
+$string['slide'] = 'Slide';
 $string['finish'] = 'Finish';
 $string['slides:addinstance'] = 'Add a new Slides activity';
 $string['slides:view'] = 'View Slides activity';

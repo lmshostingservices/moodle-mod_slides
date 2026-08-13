@@ -23,8 +23,8 @@
  */
 
 $plugin->component = 'mod_slides';
-$plugin->version   = 2026081212;  // 2026-08-13, v1.4.12
+$plugin->version   = 2026081213;  // 2026-08-13, v1.4.13
 $plugin->requires  = 2022041900; // Moodle 4.0+
 $plugin->supported = [400, 500]; // Moodle 4.0 - 5.x
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.4.12';
+$plugin->release   = '1.4.13';

@@ -64,7 +64,7 @@
     height: 30px;
     color: #fff;
     border-radius: 50%;
-    background: var(--success);
+    background: var(--bs-success, var(--success, #198754));
     margin: 0 auto 10px;
     display: flex;
     align-items: center;
@@ -72,7 +72,7 @@
     visibility: hidden;
 }
 .nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide) .flip-card-content.child-flipped {
-    border-color: var(--primary);
+    border-color: var(--bs-primary, var(--primary, #0f6cbf));
 }
 .nct-slides-view-content .nctslides-content-wrapper .carousel-inner .carousel-item .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide) .flip-card-content.child-flipped .flip-card-block.flipped .flip-feedback-side {
     visibility: visible;

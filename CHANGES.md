@@ -3,6 +3,24 @@
 All notable changes to the Slides activity module. Versions use Moodle's
 10-digit `YYYYMMDDXX` format.
 
+## 2026081213 (v1.4.13) - 2026-08-13
+- Redesigned the slide pagination dots. The old numbered `<ol><li>` markup used
+  Bootstrap-4 carousel-indicator classes that collapsed into one broken oval on
+  Bootstrap 5. Replaced with discrete circular step-dots (`<button.slides-dot>`)
+  that don't depend on Bootstrap's indicator CSS; the nav highlights the current
+  dot and marks reached slides as available.
+- Bootstrap-5 colour safety: every `var(--primary)`/`var(--success)` now falls
+  back to `var(--bs-primary/…, #hex)` so fills/lines don't vanish on BS5 themes.
+- Accessibility: carousel controls use `.visually-hidden` (BS5) + `aria-label`;
+  dots carry `aria-label`.
+- JS hardening: removed an unused `theme_boost/bootstrap/carousel` import from
+  `nctslides` (it was a hard AMD dependency that could fail the whole module on
+  some Bootstrap builds), and added the missing `core/notification` import (the
+  load-next-slide error handler referenced `Notification` without importing it).
+- Security: added `require_capability('mod/slides:viewslideeditor', …)` to the
+  delete-slide, toggle-visibility and reorder-slides fragment endpoints, which
+  previously performed destructive writes with no editing-capability check.
+
 ## 2026081212 (v1.4.12) - 2026-08-13
 - Fixed the frozen drag-and-drop on the matching slide type. The build tool was
   double-wrapping `slidetype_matching/ddmatching` (an already-AMD module that

@@ -1,4 +1,4 @@
-define("mod_slides/nctslides", ["exports", "jquery", "mod_slides/selectors", "mod_slides/slide", "core/fragment", "core/templates", "core/loadingicon", "theme_boost/bootstrap/carousel"], function (_exports, _jquery, _selectors, _slide, Fragment, Templates, LoadingIcon, _carousel) {
+define("mod_slides/nctslides", ["exports", "jquery", "mod_slides/selectors", "mod_slides/slide", "core/fragment", "core/templates", "core/loadingicon", "core/notification"], function (_exports, _jquery, _selectors, _slide, Fragment, Templates, LoadingIcon, _notification) {
   "use strict";
 
   _exports.__esModule = true;
@@ -8,6 +8,7 @@ define("mod_slides/nctslides", ["exports", "jquery", "mod_slides/selectors", "mo
   Fragment = _interopRequireWildcard(Fragment);
   Templates = _interopRequireWildcard(Templates);
   LoadingIcon = _interopRequireWildcard(LoadingIcon);
+  _notification = _interopRequireDefault(_notification);
   function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function (e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, default: e }; if (null === e || "object" != typeof e && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (const t in e) "default" !== t && {}.hasOwnProperty.call(e, t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, t)) && (i.get || i.set) ? o(f, t, i) : f[t] = e[t]); return f; })(e, t); }
   function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
   const getRoot = () => document.querySelector(_selectors.SELECTORS.root);
@@ -97,7 +98,7 @@ define("mod_slides/nctslides", ["exports", "jquery", "mod_slides/selectors", "mo
         this.makeNextArrowActive(slideinstanceid);
         currentSlide.options.notCompleted = false;
         currentSlide.options.completed = true;
-      }).catch(Notification.exception);
+      }).catch(_notification.default.exception);
     }
     updateNextButtons(currentSlide) {
       var self = this;
@@ -186,6 +187,13 @@ define("mod_slides/nctslides", ["exports", "jquery", "mod_slides/selectors", "mo
           toEl.classList.remove(startClass, moveClass);
           toEl.classList.add('active');
           navBusy = false;
+          const dots = getRoot().querySelectorAll('.slides-pagination-dots .slides-dot');
+          dots.forEach((dot, di) => {
+            dot.classList.toggle('current', di === targetIdx);
+            if (di <= targetIdx) {
+              dot.classList.add('available');
+            }
+          });
           (0, _jquery.default)(carouselElem).trigger(_jquery.default.Event('slid.bs.carousel', {
             relatedTarget: toEl,
             direction: dirNext ? 'left' : 'right',

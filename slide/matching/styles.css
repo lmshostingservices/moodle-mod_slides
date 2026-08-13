@@ -40,7 +40,7 @@
     min-width: 300px;
     height: 100%;
     border-radius: 5px;
-    border: 1px dashed var(--primary);
+    border: 1px dashed var(--bs-primary, var(--primary, #0f6cbf));
     background-color: transparent;
     display: block;
     position: relative;
@@ -109,7 +109,7 @@
     color: #fff;
     text-align: center;
     border-radius: 50%;
-    background: var(--success);
+    background: var(--bs-success, var(--success, #198754));
 }
 .nct-slides-view-content .nctslides-content-wrapper .carousel-item .activity-block .slides-ans-block .slides-drop-block .draghome.placed {
     border: 1px solid #fff;

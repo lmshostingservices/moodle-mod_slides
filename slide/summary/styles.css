@@ -43,7 +43,7 @@
     width: 100%;
     font-size: 24px;
     font-weight: 400;
-    color: var(--primary);
+    color: var(--bs-primary, var(--primary, #0f6cbf));
     text-align: center;
     display: block;
 }

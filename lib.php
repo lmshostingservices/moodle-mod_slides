@@ -369,6 +369,8 @@ function mod_slides_output_fragment_load_next_listeitem($args) {
 function slides_output_fragment_delete_slide($args) {
     global $DB;
 
+    require_capability('mod/slides:viewslideeditor', $args['context']);
+
     $slideshortname = $args['slideshortname'];
     $slideinstanceid = $args['slideinstanceid'];
     $cmid = $args['cmid'];
@@ -388,6 +390,8 @@ function slides_output_fragment_delete_slide($args) {
 function slides_output_fragment_update_visibility($args) {
     if (isset($args['context']) && !empty($args['cmid'])) {
 
+        require_capability('mod/slides:viewslideeditor', $args['context']);
+
         $slideshortname = $args['slideshortname'];
         $slideinstanceid = $args['slideinstanceid'];
 
@@ -406,6 +410,9 @@ function slides_output_fragment_update_slides_order($args) {
 
     if (isset($args['context']) && !empty($args['cmid'])) {
         $slides = $args['slides'];
+
+        require_capability('mod/slides:viewslideeditor', $args['context']);
+
         $slides = explode(',', $slides);
         foreach ($slides as $order => $slideid) {
             $order++;

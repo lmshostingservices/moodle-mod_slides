@@ -5,7 +5,7 @@ import Slide from "mod_slides/slide";
 import * as Fragment from "core/fragment";
 import * as Templates from 'core/templates';
 import * as LoadingIcon from 'core/loadingicon';
-import {Carousel} from 'theme_boost/bootstrap/carousel';
+import Notification from 'core/notification';
 
 const getRoot = () => document.querySelector(SELECTORS.root);
 
@@ -291,6 +291,14 @@ class NctSlides {
                 toEl.classList.remove(startClass, moveClass);
                 toEl.classList.add('active');
                 navBusy = false;
+                // Move the "current" highlight on the pagination dots to match.
+                const dots = getRoot().querySelectorAll('.slides-pagination-dots .slides-dot');
+                dots.forEach((dot, di) => {
+                    dot.classList.toggle('current', di === targetIdx);
+                    if (di <= targetIdx) {
+                        dot.classList.add('available');
+                    }
+                });
                 $(carouselElem).trigger($.Event('slid.bs.carousel', {
                     relatedTarget: toEl,
                     direction: dirNext ? 'left' : 'right',
