@@ -145,18 +145,82 @@ define("mod_slides/nctslides", ["exports", "jquery", "mod_slides/selectors", "mo
       var self = this;
       const carouselElem = getRoot().querySelector(_selectors.SELECTORS.carousel);
       const arrow = document.querySelector(_selectors.SELECTORS.nextArrow);
-      const driveCarousel = direction => {
-        try {
-          (0, _jquery.default)(carouselElem).carousel(direction);
-        } catch (e) {}
+      var navBusy = false;
+      const slideItems = () => Array.from(carouselElem.querySelectorAll('.carousel-item.slide-item'));
+      const goToIndex = targetIdx => {
+        if (navBusy) {
+          return;
+        }
+        const items = slideItems();
+        const current = items.findIndex(el => el.classList.contains('active'));
+        if (current < 0 || targetIdx === current || targetIdx < 0 || targetIdx >= items.length) {
+          return;
+        }
+        const dirNext = targetIdx > current;
+        const fromEl = items[current];
+        const toEl = items[targetIdx];
+        const slideEvent = _jquery.default.Event('slide.bs.carousel', {
+          relatedTarget: toEl,
+          direction: dirNext ? 'left' : 'right',
+          from: current,
+          to: targetIdx
+        });
+        (0, _jquery.default)(carouselElem).trigger(slideEvent);
+        if (slideEvent.isDefaultPrevented()) {
+          return;
+        }
+        navBusy = true;
+        const startClass = dirNext ? 'carousel-item-next' : 'carousel-item-prev';
+        const moveClass = dirNext ? 'carousel-item-start' : 'carousel-item-end';
+        toEl.classList.add(startClass);
+        void toEl.offsetHeight;
+        fromEl.classList.add(moveClass);
+        toEl.classList.add(moveClass);
+        var finished = false;
+        const finish = () => {
+          if (finished) {
+            return;
+          }
+          finished = true;
+          fromEl.classList.remove('active', moveClass, startClass);
+          toEl.classList.remove(startClass, moveClass);
+          toEl.classList.add('active');
+          navBusy = false;
+          (0, _jquery.default)(carouselElem).trigger(_jquery.default.Event('slid.bs.carousel', {
+            relatedTarget: toEl,
+            direction: dirNext ? 'left' : 'right',
+            from: current,
+            to: targetIdx
+          }));
+        };
+        const onTransitionEnd = e => {
+          if (e.target === toEl) {
+            toEl.removeEventListener('transitionend', onTransitionEnd);
+            finish();
+          }
+        };
+        toEl.addEventListener('transitionend', onTransitionEnd);
+        setTimeout(finish, 700);
       };
+      const activeIndex = () => slideItems().findIndex(el => el.classList.contains('active'));
       (0, _jquery.default)(carouselElem).on('click.nctslidesnav', '.carousel-control-next', function (e) {
         e.preventDefault();
-        driveCarousel('next');
+        goToIndex(activeIndex() + 1);
       });
       (0, _jquery.default)(carouselElem).on('click.nctslidesnav', '.carousel-control-prev', function (e) {
         e.preventDefault();
-        driveCarousel('prev');
+        goToIndex(activeIndex() - 1);
+      });
+      (0, _jquery.default)(carouselElem).on('click.nctslidesnav', _selectors.SELECTORS.indicators + ' [data-slide-to], ' + _selectors.SELECTORS.indicators + ' [data-bs-slide-to], ' + _selectors.SELECTORS.indicators + ' li', function (e) {
+        e.preventDefault();
+        var raw = this.getAttribute('data-slide-to');
+        if (raw === null) {
+          raw = this.getAttribute('data-bs-slide-to');
+        }
+        var idx = raw !== null ? parseInt(raw, 10) : Array.prototype.indexOf.call(this.parentNode.children, this);
+        if (!isNaN(idx)) {
+          goToIndex(idx);
+        }
       });
       (0, _jquery.default)(carouselElem).on('slide.bs.carousel', function (e) {
         if (e.relatedTarget === null) {

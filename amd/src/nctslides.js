@@ -216,44 +216,126 @@ class NctSlides {
         const carouselElem = getRoot().querySelector(SELECTORS.carousel);
         const arrow = document.querySelector(SELECTORS.nextArrow);
 
-        // Explicitly wire the carousel navigation controls.
+        // Self-contained carousel navigation (does NOT use Bootstrap's carousel JS).
         //
         // The controls in the template use Bootstrap 4 data-api attributes
-        // (data-slide / data-target / href). Modern Moodle ships Bootstrap 5
-        // and, on the activity view, does not register the carousel click
-        // data-api at all (neither the BS4 jQuery data-api nor the BS5 native
-        // one). As a result the prev/next arrows render and look clickable but
-        // never move the carousel, which also blocks forced-listen progression
-        // and the "reach the end" completion rule. Bind the controls directly
-        // so navigation works regardless of the Bootstrap version.
+        // (data-slide / data-target / href), but modern Moodle ships Bootstrap 5.
+        // On the activity view no carousel click data-api is registered (neither
+        // the BS4 jQuery one nor the BS5 native one), so the arrows never moved the
+        // carousel. Worse, driving Bootstrap's own carousel API on this markup is
+        // unreliable: after one transition the `slid` event often never fires, so
+        // Bootstrap's internal `_isSliding` flag sticks and blocks all further
+        // navigation (arrows dead after one move, cannot go back), AND the incoming
+        // slide's content is never initialised (blank card). That single failure
+        // produced every reported symptom.
         //
-        // Event delegation is used deliberately: a control disabled via
-        // pointer-events:none does not receive the click, so the existing
-        // gating (which toggles pointerEvents) is preserved. The jQuery
-        // carousel bridge still fires the slide/slid.bs.carousel events that
-        // this method listens to below, so each slide's content initialises as
-        // normal. The .carousel-control-next / .carousel-control-prev classes
-        // cover both the arrows and the forcenext/forceprev buttons; the finish
-        // button uses .carousel-control-finish and is intentionally left to its
-        // default href so it navigates to the next activity.
-        const driveCarousel = (direction) => {
-            try {
-                $(carouselElem).carousel(direction);
-            } catch (e) {
-                // Bootstrap 5 can throw while syncing the legacy indicator
-                // markup; the slide transition still succeeds, so ignore it.
+        // We therefore perform the transition ourselves and ALWAYS fire
+        // slide/slid.bs.carousel so the existing handlers below still run (arrow
+        // state, audio, and — critically — initContentDisplay on the incoming
+        // slide). A guard plus a safety-net timeout guarantees the transition can
+        // never get stuck. Event delegation preserves the existing gating: a
+        // control disabled via pointer-events:none receives no click. The
+        // .carousel-control-next / .carousel-control-prev classes cover both the
+        // arrows and the forcenext/forceprev buttons; the finish button uses
+        // .carousel-control-finish and keeps its default href to the next activity.
+        var navBusy = false;
+
+        const slideItems = () => Array.from(
+            carouselElem.querySelectorAll('.carousel-item.slide-item'));
+
+        const goToIndex = (targetIdx) => {
+            if (navBusy) {
+                return;
             }
+            const items = slideItems();
+            const current = items.findIndex((el) => el.classList.contains('active'));
+            if (current < 0 || targetIdx === current || targetIdx < 0 || targetIdx >= items.length) {
+                return;
+            }
+
+            const dirNext = targetIdx > current;
+            const fromEl = items[current];
+            const toEl = items[targetIdx];
+
+            // Cancellable slide event, so existing logic can veto/react.
+            const slideEvent = $.Event('slide.bs.carousel', {
+                relatedTarget: toEl,
+                direction: dirNext ? 'left' : 'right',
+                from: current,
+                to: targetIdx
+            });
+            $(carouselElem).trigger(slideEvent);
+            if (slideEvent.isDefaultPrevented()) {
+                return;
+            }
+
+            navBusy = true;
+
+            // Mirror Bootstrap 5's transition classes so the site's carousel CSS
+            // animates the move (position the incoming slide, reflow, then slide).
+            const startClass = dirNext ? 'carousel-item-next' : 'carousel-item-prev';
+            const moveClass = dirNext ? 'carousel-item-start' : 'carousel-item-end';
+
+            toEl.classList.add(startClass);
+            void toEl.offsetHeight; // Force reflow so the animation runs.
+            fromEl.classList.add(moveClass);
+            toEl.classList.add(moveClass);
+
+            var finished = false;
+            const finish = () => {
+                if (finished) {
+                    return;
+                }
+                finished = true;
+                fromEl.classList.remove('active', moveClass, startClass);
+                toEl.classList.remove(startClass, moveClass);
+                toEl.classList.add('active');
+                navBusy = false;
+                $(carouselElem).trigger($.Event('slid.bs.carousel', {
+                    relatedTarget: toEl,
+                    direction: dirNext ? 'left' : 'right',
+                    from: current,
+                    to: targetIdx
+                }));
+            };
+
+            const onTransitionEnd = (e) => {
+                if (e.target === toEl) {
+                    toEl.removeEventListener('transitionend', onTransitionEnd);
+                    finish();
+                }
+            };
+            toEl.addEventListener('transitionend', onTransitionEnd);
+            // Safety net: complete even if transitionend never fires (idempotent).
+            setTimeout(finish, 700);
         };
+
+        const activeIndex = () => slideItems().findIndex((el) => el.classList.contains('active'));
 
         $(carouselElem).on('click.nctslidesnav', '.carousel-control-next', function (e) {
             e.preventDefault();
-            driveCarousel('next');
+            goToIndex(activeIndex() + 1);
         });
 
         $(carouselElem).on('click.nctslidesnav', '.carousel-control-prev', function (e) {
             e.preventDefault();
-            driveCarousel('prev');
+            goToIndex(activeIndex() - 1);
         });
+
+        // Indicator dots: jump straight to the chosen slide.
+        $(carouselElem).on('click.nctslidesnav',
+            SELECTORS.indicators + ' [data-slide-to], ' + SELECTORS.indicators + ' [data-bs-slide-to], ' + SELECTORS.indicators + ' li',
+            function (e) {
+                e.preventDefault();
+                var raw = this.getAttribute('data-slide-to');
+                if (raw === null) {
+                    raw = this.getAttribute('data-bs-slide-to');
+                }
+                var idx = raw !== null ? parseInt(raw, 10) : Array.prototype.indexOf.call(this.parentNode.children, this);
+                if (!isNaN(idx)) {
+                    goToIndex(idx);
+                }
+            });
 
         $(carouselElem).on('slide.bs.carousel', function(e) {
 

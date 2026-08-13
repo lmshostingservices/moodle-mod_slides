@@ -3,6 +3,30 @@
 All notable changes to the Slides activity module. Versions use Moodle's
 10-digit `YYYYMMDDXX` format.
 
+## 2026081211 (v1.4.11) - 2026-08-13
+- Replaced the carousel navigation with a self-contained implementation that does
+  NOT drive Bootstrap's carousel JS. The previous approach (v1.4.7) called
+  Bootstrap's carousel API, but on Bootstrap 5 that API is unreliable on the
+  plugin's legacy markup: after one transition the `slid` event often never fires,
+  so Bootstrap's `_isSliding` flag sticks and blocks all further navigation (arrows
+  dead after one move, no going back) and the incoming slide's content never
+  initialises (blank card). The new code performs the slide transition directly and
+  always fires slide/slid.bs.carousel, with a guard + safety-net timeout so it can
+  never get stuck. Verified live: forward and backward through every slide,
+  multi-step indicator jumps, and content rendering on each slide. Fixes: "couldn't
+  move to next slide", "move forward once but not back", and "nothing displays in
+  the cards after the video".
+
+## 2026081210 (v1.4.10) - 2026-08-13
+- Version bump only, to trigger the Moodle DB upgrade past 2026081209. Identical
+  code to 2026081206/v1.4.7 below (Bootstrap 5 carousel navigation fix + 10-digit
+  upgrade savepoints).
+
+## 2026081209 (v1.4.9) - 2026-08-13
+- Version bump only, to upgrade strictly past the current stamp (2026081208).
+  Identical code to 2026081206/v1.4.7 below (Bootstrap 5 carousel navigation fix
+  + 10-digit upgrade savepoints).
+
 ## 2026081208 (v1.4.8) - 2026-08-13
 - Version bump only, to clear the LMS Labs auto-promotion check (the pipeline had
   a promoted numeric of 2026081207; a build must be strictly greater). Identical
