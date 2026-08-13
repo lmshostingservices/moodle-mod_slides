@@ -42,8 +42,9 @@ class NctSlides {
             const module = async (element, index) => {
                 const options = slidedata[element.dataset.slideinstanceid];
                 if (options != undefined && 'customslidemodule' in options && options.customslidemodule != '') {
-                    const mod = await import(options.customslidemodule);
-                    const slide = new mod(element, self, options);
+                    const mod = await new Promise((resolve, reject) => require([options.customslidemodule], resolve, reject));
+                    const SlideClass = (mod && mod.default) ? mod.default : mod;
+                    const slide = new SlideClass(element, self, options);
                     self.slides[element.dataset.slideinstanceid] = slide;
                 } else {
                     var slide = new Slide(element, this, options || {});
@@ -214,6 +215,45 @@ class NctSlides {
 
         const carouselElem = getRoot().querySelector(SELECTORS.carousel);
         const arrow = document.querySelector(SELECTORS.nextArrow);
+
+        // Explicitly wire the carousel navigation controls.
+        //
+        // The controls in the template use Bootstrap 4 data-api attributes
+        // (data-slide / data-target / href). Modern Moodle ships Bootstrap 5
+        // and, on the activity view, does not register the carousel click
+        // data-api at all (neither the BS4 jQuery data-api nor the BS5 native
+        // one). As a result the prev/next arrows render and look clickable but
+        // never move the carousel, which also blocks forced-listen progression
+        // and the "reach the end" completion rule. Bind the controls directly
+        // so navigation works regardless of the Bootstrap version.
+        //
+        // Event delegation is used deliberately: a control disabled via
+        // pointer-events:none does not receive the click, so the existing
+        // gating (which toggles pointerEvents) is preserved. The jQuery
+        // carousel bridge still fires the slide/slid.bs.carousel events that
+        // this method listens to below, so each slide's content initialises as
+        // normal. The .carousel-control-next / .carousel-control-prev classes
+        // cover both the arrows and the forcenext/forceprev buttons; the finish
+        // button uses .carousel-control-finish and is intentionally left to its
+        // default href so it navigates to the next activity.
+        const driveCarousel = (direction) => {
+            try {
+                $(carouselElem).carousel(direction);
+            } catch (e) {
+                // Bootstrap 5 can throw while syncing the legacy indicator
+                // markup; the slide transition still succeeds, so ignore it.
+            }
+        };
+
+        $(carouselElem).on('click.nctslidesnav', '.carousel-control-next', function (e) {
+            e.preventDefault();
+            driveCarousel('next');
+        });
+
+        $(carouselElem).on('click.nctslidesnav', '.carousel-control-prev', function (e) {
+            e.preventDefault();
+            driveCarousel('prev');
+        });
 
         $(carouselElem).on('slide.bs.carousel', function(e) {
 
@@ -419,6 +459,8 @@ class NctSlides {
         }
     }
 }
+
+export const init = NctSlides.createInstance;
 
 export default {
     init: NctSlides.createInstance,

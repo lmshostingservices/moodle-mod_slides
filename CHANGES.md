@@ -1,0 +1,84 @@
+# Changelog — mod_slides
+
+All notable changes to the Slides activity module. Versions use Moodle's
+10-digit `YYYYMMDDXX` format.
+
+## 2026081208 (v1.4.8) - 2026-08-13
+- Version bump only, to clear the LMS Labs auto-promotion check (the pipeline had
+  a promoted numeric of 2026081207; a build must be strictly greater). Identical
+  code to 2026081206/v1.4.7 below.
+
+## 2026081206 (v1.4.7) - 2026-08-13
+- Fixed carousel navigation on Bootstrap 5 Moodle sites. The prev/next controls
+  used Bootstrap 4 data-api attributes (`data-slide` / `href`), but modern Moodle
+  (4.4+/5.x) ships Bootstrap 5 and registers no carousel click data-api on the
+  activity view, so the arrows rendered but never moved the carousel. This left
+  learners stuck after the video: the arrows did nothing, the video never
+  advanced to the next slide, and the "reach the end" completion rule could never
+  be met. The controls are now wired directly in JavaScript, so navigation works
+  on both Bootstrap 4 and 5. Event delegation preserves the existing
+  forced-listen gating (a control disabled via pointer-events is still ignored).
+- Hardened `db/upgrade.php`: converted four legacy 13-digit upgrade savepoints to
+  10-digit values below the current version, so upgrading from the 10-digit
+  version line no longer risks re-stamping a 13-digit version (which previously
+  caused "downgrade not allowed" revert loops). No schema changes.
+
+## 2026081205 (v1.4.6) - 2026-08-12
+- Fixed a null-reference crash in the slide event setup: the course-index click
+  handler assumed the drawer element always exists. On themes without it,
+  `addEventListener` threw and aborted ALL slide handlers, breaking navigation
+  arrows, video-end auto-advance, and completion tracking. Now null-guarded.
+
+## 2026081204 (v1.4.5) - 2026-08-12
+- Recompiled ALL AMD modules (parent + video/flip/matching subplugins) with one
+  consistent build so cross-module imports and class inheritance resolve
+  correctly. Fixes `Class extends value #<Object> is not a constructor` when the
+  video slide-type extends the base slide class. This completes the JS chain that
+  renders the video.
+
+## 2026081203 (v1.4.4) - 2026-08-12
+- Fixed slide-type module loading: replaced a native dynamic `import()` (which
+  browsers cannot resolve for bare Moodle specifiers like `slidetype_video/slide`)
+  with Moodle's `require()` loader. This was the last blocker preventing the
+  video slide from rendering.
+
+## 2026081202 (v1.4.3) - 2026-08-12
+- Exposed `init` as a named export on the `nctslides` AMD module so Moodle's
+  `js_call_amd('mod_slides/nctslides','init')` resolves (fixes
+  `amd.init is not a function`, which left the slide on a loading spinner).
+
+## 2026081201 (v1.4.2) — 2026-08-12
+- Version bump so Moodle runs a normal plugin upgrade on upload.
+- Tightened form-field parameter types to `PARAM_TEXT` on the button-group and matching-answer
+  form fields (Moodle marketplace security check).
+- Added the missing `cachedef_webfonts` language string.
+- Ships the JavaScript fix: `selectors.js` provides named exports (`SELECTORS`,
+  `forceListen`) and the AMD build is regenerated, resolving the
+  `Cannot read properties of undefined (reading 'root')` error that left Video
+  Activity pages stuck with no content.
+
+## 2026081200 (v1.4.1) — 2026-08-12
+- Fixed `db/subplugins.json` to use the `plugintypes` key (was `subplugintypes`),
+  which on Moodle 4.x/5.x caused the `slidetype` subplugin type to fail to
+  register and Video Activity pages to throw `slide video - notfound`.
+- Standardised every component to a 10-digit version number (parent and all
+  seven `slidetype_*` subplugins now `2026081200`) for Moodle plugin directory
+  compliance.
+- Fixed a JavaScript import/export mismatch: `selectors.js` now provides named
+  exports (`SELECTORS`, `forceListen`) so `slide.js`'s named imports resolve
+  (previously `SELECTORS` was `undefined`, breaking slide content rendering).
+- Recompiled the AMD JavaScript modules (`slide`, `nctslides`, `selectors`,
+  `autosplit`) from source to correct `define()` output.
+
+## 2026081100 (v1.4)
+- Video slide type and slide-editor improvements.
+
+## 2026072700 (v1.3)
+- Added the `video` slide type and packaging of all built-in slide types.
+
+## 2025051500 (v1.2)
+- Slide-type subplugin framework (flip, imagetext, imageposter, introduction,
+  matching, summary).
+
+## 2024093012 (v1.1)
+- Initial public release of the Slides activity module.

@@ -384,7 +384,7 @@ abstract class general_slide_form extends \moodleform {
         }
 
         $mform->addGroup($splitbutton, 'splitbuttonar', '', [' '], false);
-        $mform->setType('splitbuttonar', PARAM_RAW); // pipeline-ignore: PARAM_RAW — JSON blob decoded immediately after form submit
+        $mform->setType('splitbuttonar', PARAM_TEXT);
     }
 
     /**

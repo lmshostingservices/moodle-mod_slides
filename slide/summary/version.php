@@ -23,4 +23,4 @@
  */
 
 $plugin->component = 'slidetype_summary';
-$plugin->version = 2026081207;
+$plugin->version = 2026081205;

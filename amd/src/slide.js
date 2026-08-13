@@ -88,11 +88,14 @@ export default class Slide {
         }
 
         // Disable the clicks on course index during the user listen.
-        document.querySelector(SELECTORS.courseIndex).addEventListener('click', function (e) {
-            if (self.disableMenu) {
-                e.preventDefault();
-            }
-        });
+        const courseIndexEl = document.querySelector(SELECTORS.courseIndex);
+        if (courseIndexEl) {
+            courseIndexEl.addEventListener('click', function (e) {
+                if (self.disableMenu) {
+                    e.preventDefault();
+                }
+            });
+        }
 
         // Visibility changed.
         // User switched to different browser. Stop the timespent and playing audio.
