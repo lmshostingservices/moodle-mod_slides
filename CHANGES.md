@@ -3,6 +3,19 @@
 All notable changes to the Slides activity module. Versions use Moodle's
 10-digit `YYYYMMDDXX` format.
 
+## 2026081212 (v1.4.12) - 2026-08-13
+- Fixed the frozen drag-and-drop on the matching slide type. The build tool was
+  double-wrapping `slidetype_matching/ddmatching` (an already-AMD module that
+  begins with `//` comments): it emitted `define("slidetype_matching/ddmatching",
+  [], function(){ define([...real deps...], factory) })`, so RequireJS threw
+  "Mismatched anonymous define() module" and the drag-drop engine never loaded —
+  its `init` (called for incomplete questions only) failed, so no drag handlers
+  were ever attached and learners could not move the items to complete the
+  activity. The build now detects an existing AMD `define()` past line comments
+  and emits a single correctly-named module (no Babel wrapping). Verified: the
+  module now loads as one named define exporting `init()`. Also corrects
+  `mod_slides/slide_editor` (the other already-AMD module) to a named define.
+
 ## 2026081211 (v1.4.11) - 2026-08-13
 - Replaced the carousel navigation with a self-contained implementation that does
   NOT drive Bootstrap's carousel JS. The previous approach (v1.4.7) called

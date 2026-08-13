@@ -1,4 +1,4 @@
-define(['jquery', 'core/modal_factory', 'core/modal_events', 'core/str',
+define("mod_slides/slide_editor", ['jquery', 'core/modal_factory', 'core/modal_events', 'core/str',
     'core/fragment', 'core/templates', 'core/notification', 'core/loadingicon', 'core/sortable_list'],
     function ($, Modal, ModalEvents, Str, Fragment, Templates, Notification, LoadingIcon, SortableList) {
 
