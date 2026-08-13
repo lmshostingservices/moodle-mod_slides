@@ -23,4 +23,4 @@
  */
 
 $plugin->component = 'slidetype_flip';
-$plugin->version = 2026071700;
+$plugin->version = 2026081202;

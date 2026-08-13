@@ -1,7 +1,7 @@
 
 const root = '#mod-nct-slides';
 
-const SELECTORS = {
+export const SELECTORS = {
     root: root,
     slideItem: root + ' .slides-list .slide-item',
     clickToView: root + ' .clicktoview',
@@ -38,7 +38,7 @@ const SELECTORS = {
     }
 };
 
-const forceListen = {
+export const forceListen = {
     none: 0,
     audio: 1,
     duration: 2,

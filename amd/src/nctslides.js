@@ -420,6 +420,8 @@ class NctSlides {
     }
 }
 
+export const init = NctSlides.createInstance;
+
 export default {
     init: NctSlides.createInstance,
 }
