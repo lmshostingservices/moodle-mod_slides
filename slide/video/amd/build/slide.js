@@ -1,108 +1,89 @@
-/**
- * Manage each individual video slide.
- */
+define("slidetype_video/slide", ["exports", "jquery", "mod_slides/selectors", "core/ajax", "core/fragment", "core/templates", "core/loadingicon", "mod_slides/slide", "media_videojs/video-lazy", "core_filters/events"], function (_exports, _jquery, _selectors, _ajax, Fragment, Templates, LoadingIcon, _slide, VideoJS, FilterEvents) {
+  "use strict";
 
-define('slidetype_video/slide', [
-    'jquery',
-    'mod_slides/selectors',
-    'core/ajax',
-    'core/fragment',
-    'core/templates',
-    'core/loadingicon',
-    'mod_slides/slide',
-    'media_videojs/video-lazy',
-    'core_filters/events'
-], function($, Selectors, Ajax, Fragment, Templates, LoadingIcon, BaseSlide, VideoJS, FilterEvents) {
-
-    var BaseSelectors = Selectors.SELECTORS;
-    var forceListen = Selectors.forceListen;
-
-    var SELECTORS = Object.assign({}, BaseSelectors, {
-        flipCardBlock: '.flip-card-block'
-    });
-
-    class Slide extends BaseSlide {
-
-        constructor(element, nctslides, options) {
-            super(element, nctslides, options, false);
-
-            this.currentListenItem = null;
-            this.timeOut = null;
-
-            console.log(element);
-        }
-
-        startViewContent() {
-            var self = this;
-            var contents = this.element.querySelectorAll(SELECTORS.listenItem);
-            this.contentAnimation(contents);
-
-            setTimeout(function() {
-                var videoElement = contents[0].querySelector('.video-js');
-                var player = VideoJS.getPlayer(videoElement.id);
-                if (self.options.notCompleted || !self.options.completed) {
-                    player.play();
-                }
-                self.videoEvents(player);
-            }, this.interval);
-        }
-
-        videoEvents(player) {
-            var self = this;
-
-            console.log(player);
-
-            var currentIndex = 1;
-
-            if (this.options.forcelisten == forceListen.audio) {
-                player.on('ended', function() {
-                    self.loadListenItem();
-                });
-            } else if (this.options.forcelisten == forceListen.duration && currentIndex in self.options.listenduration) {
-                var timeUpdateEvent = function(e) {
-                    if (player.currentTime() >= self.options.listenduration[currentIndex]) {
-                        self.loadListenItem();
-                        player.off('timeupdate', timeUpdateEvent);
-                    }
-                };
-                player.on('timeupdate', timeUpdateEvent);
-            } else {
-                self.loadListenItem();
-            }
-
-            var audios = this.element.querySelector(SELECTORS.listenItem).querySelectorAll('audio');
-            if (audios.length <= 0) {
-                return false;
-            }
-
-            var audio = audios[0];
-
-            player.on('play', function() {
-                if (!audio.ended) {
-                    audio.play();
-                }
-                self.nctSlides.setCurrentAudio(audio);
-                self.currentAudio = audio;
-            });
-
-            player.on('pause', function() {
-                self.nctSlides.setCurrentAudio(null);
-                self.currentAudio = null;
-                audio.pause();
-            });
-
-            player.on('ended', function() {
-                self.nctSlides.setCurrentAudio(null);
-                self.currentAudio = null;
-                audio.pause();
-            });
-        }
-
-        updateNextItem(completedIndex) {
-            this.element.querySelector(SELECTORS.listenItem + '[data-index="' + completedIndex + '"]').dataset.completed = true;
-        }
+  _exports.__esModule = true;
+  _exports.default = void 0;
+  _jquery = _interopRequireDefault(_jquery);
+  _ajax = _interopRequireDefault(_ajax);
+  Fragment = _interopRequireWildcard(Fragment);
+  Templates = _interopRequireWildcard(Templates);
+  LoadingIcon = _interopRequireWildcard(LoadingIcon);
+  _slide = _interopRequireDefault(_slide);
+  VideoJS = _interopRequireWildcard(VideoJS);
+  FilterEvents = _interopRequireWildcard(FilterEvents);
+  function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function (e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, default: e }; if (null === e || "object" != typeof e && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (const t in e) "default" !== t && {}.hasOwnProperty.call(e, t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, t)) && (i.get || i.set) ? o(f, t, i) : f[t] = e[t]); return f; })(e, t); }
+  function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+  const getRoot = document.querySelector(_selectors.SELECTORS.root);
+  const SELECTORS = {
+    ..._selectors.SELECTORS,
+    ...{
+      flipCardBlock: '.flip-card-block'
     }
-
-    return Slide;
-
+  };
+  class Slide extends _slide.default {
+    constructor(element, nctslides, options) {
+      super(element, nctslides, options, false);
+      this.currentListenItem = null;
+      this.timeOut = null;
+      console.log(element);
+    }
+    startViewContent() {
+      var contents = this.element.querySelectorAll(SELECTORS.listenItem);
+      this.contentAnimation(contents);
+      setTimeout(() => {
+        const videoElement = contents[0].querySelector('.video-js');
+        var player = VideoJS.getPlayer(videoElement.id);
+        if (this.options.notCompleted || !this.options.completed) {
+          player.play();
+        }
+        this.videoEvents(player);
+      }, this.interval);
+    }
+    videoEvents(player) {
+      const self = this;
+      console.log(player);
+      const currentIndex = 1;
+      if (this.options.forcelisten == _selectors.forceListen.audio) {
+        player.on('ended', function () {
+          self.loadListenItem();
+        });
+      } else if (this.options.forcelisten == _selectors.forceListen.duration && currentIndex in self.options.listenduration) {
+        var timeUpdateEvent = function (e) {
+          if (player.currentTime() >= self.options.listenduration[currentIndex]) {
+            self.loadListenItem();
+            player.off('timeupdate', timeUpdateEvent);
+          }
+        };
+        player.on('timeupdate', timeUpdateEvent);
+      } else {
+        self.loadListenItem();
+      }
+      const audios = this.element.querySelector(SELECTORS.listenItem).querySelectorAll('audio');
+      if (audios.length <= 0) {
+        return false;
+      }
+      const audio = audios[0];
+      player.on('play', function () {
+        if (!audio.ended) {
+          audio.play();
+        }
+        self.nctSlides.setCurrentAudio(audio);
+        self.currentAudio = audio;
+      });
+      player.on('pause', function () {
+        self.nctSlides.setCurrentAudio(null);
+        self.currentAudio = null;
+        audio.pause();
+      });
+      player.on('ended', function (e) {
+        self.nctSlides.setCurrentAudio(null);
+        self.currentAudio = null;
+        audio.pause();
+      });
+    }
+    updateNextItem(completedIndex) {
+      this.element.querySelector(SELECTORS.listenItem + '[data-index="' + completedIndex + '"]').dataset.completed = true;
+    }
+  }
+  _exports.default = Slide;
 });

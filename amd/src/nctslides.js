@@ -42,8 +42,9 @@ class NctSlides {
             const module = async (element, index) => {
                 const options = slidedata[element.dataset.slideinstanceid];
                 if (options != undefined && 'customslidemodule' in options && options.customslidemodule != '') {
-                    const mod = await import(options.customslidemodule);
-                    const slide = new mod(element, self, options);
+                    const mod = await new Promise((resolve, reject) => require([options.customslidemodule], resolve, reject));
+                    const SlideClass = (mod && mod.default) ? mod.default : mod;
+                    const slide = new SlideClass(element, self, options);
                     self.slides[element.dataset.slideinstanceid] = slide;
                 } else {
                     var slide = new Slide(element, this, options || {});
@@ -419,6 +420,8 @@ class NctSlides {
         }
     }
 }
+
+export const init = NctSlides.createInstance;
 
 export default {
     init: NctSlides.createInstance,

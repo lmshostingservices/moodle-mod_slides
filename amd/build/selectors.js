@@ -1,7 +1,10 @@
+define("mod_slides/selectors", ["exports"], function (_exports) {
+  "use strict";
 
-const root = '#mod-nct-slides';
-
-export const SELECTORS = {
+  _exports.__esModule = true;
+  _exports.forceListen = _exports.default = _exports.SELECTORS = void 0;
+  const root = '#mod-nct-slides';
+  const SELECTORS = _exports.SELECTORS = {
     root: root,
     slideItem: root + ' .slides-list .slide-item',
     clickToView: root + ' .clicktoview',
@@ -25,26 +28,25 @@ export const SELECTORS = {
     finishButton: '[data-slide-target="finishbtn"]',
     activityRegion: '.activity-header[data-for="page-activity-header"]',
     editForm: {
-        form: '#page-mod-slides-slide form.mform',
-        headingFont: '#id_fontstyle_headingfont',
-        contentFont: '#id_fontstyle_contentfont'
+      form: '#page-mod-slides-slide form.mform',
+      headingFont: '#id_fontstyle_headingfont',
+      contentFont: '#id_fontstyle_contentfont'
     },
     others: {
-        audioPlayed: 'nctslides-audio-playing',
-        forceListen: 'nctslides-force-listen',
-        nextSlideAvailable: 'next-slide-available',
-        autoResized: 'font-auto-resized',
-        clickToViewAvailable: 'click-to-view-box-available'
+      audioPlayed: 'nctslides-audio-playing',
+      forceListen: 'nctslides-force-listen',
+      nextSlideAvailable: 'next-slide-available',
+      autoResized: 'font-auto-resized',
+      clickToViewAvailable: 'click-to-view-box-available'
     }
-};
-
-export const forceListen = {
+  };
+  const forceListen = _exports.forceListen = {
     none: 0,
     audio: 1,
-    duration: 2,
-};
-
-export default {
+    duration: 2
+  };
+  var _default = _exports.default = {
     SELECTORS: SELECTORS,
     forceListen: forceListen
-}
+  };
+});

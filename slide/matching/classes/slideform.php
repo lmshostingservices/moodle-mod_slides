@@ -102,7 +102,7 @@ class slideform extends \mod_slides\form\general_slide_form {
 
             // Content 1 Audio.
             $list[] = &$mform->addElement('text', "answer[$i]", get_string('answer', 'slidetype_matching', $i));
-            $mform->setType("answer[$i]", PARAM_RAW);
+            $mform->setType("answer[$i]", PARAM_TEXT);
 
         }
 

@@ -166,3 +166,5 @@ $string['slides:view'] = 'View Slides activity';
 $string['slides:viewslideeditor'] = 'View and use the slide editor';
 
 $string['privacy:metadata'] = 'The mod_slides plugin does not store any personal data.';
+
+$string['cachedef_webfonts'] = 'Web fonts used by the Slides activity';
