@@ -54,18 +54,34 @@ class external extends \core_external\external_api {
     public static function update_fontsize(int $instanceid, float $slideinstanceid, float $contentsize) {
         global $DB;
 
-        if ($record = $DB->get_record('slides', ['id' => $instanceid])) {
+        $params = self::validate_parameters(self::update_fontsize_parameters(), [
+            'instanceid' => $instanceid,
+            'normalsize' => $slideinstanceid,
+            'completionsize' => $contentsize,
+        ]);
+        $instanceid = $params['instanceid'];
 
-            if (!$record->autotextsize) {
-                return false;
-            }
-
-            if ($DB->set_field('slides_options', 'autofontsize', $contentsize, ['slideinstanceid' => (int)$slideinstanceid])) {
-                return true;
-            }
+        if (!$record = $DB->get_record('slides', ['id' => $instanceid])) {
+            return false;
         }
 
-        return false;
+        // Validate the caller against this activity's context and capability.
+        $cm = get_coursemodule_from_instance('slides', $instanceid, 0, false, MUST_EXIST);
+        $context = \context_module::instance($cm->id);
+        self::validate_context($context);
+        require_capability('mod/slides:view', $context);
+
+        if (!$record->autotextsize) {
+            return false;
+        }
+
+        // The autofontsize column is optional; only write it if the schema has it.
+        if (!$DB->get_manager()->field_exists('slides_options', 'autofontsize')) {
+            return false;
+        }
+
+        return (bool) $DB->set_field('slides_options', 'autofontsize', $contentsize,
+            ['slideinstanceid' => (int) $slideinstanceid]);
     }
 
     public static function update_fontsize_returns() {
@@ -94,6 +110,12 @@ class external extends \core_external\external_api {
         if (!confirm_sesskey()) {
             throw new moodle_exception('sessionexpired', 'core');
         }
+
+        // Validate the caller against the activity context before recording completion.
+        $cm = get_coursemodule_from_id('slides', $params['cmid'], 0, false, MUST_EXIST);
+        $context = \context_module::instance($cm->id);
+        self::validate_context($context);
+        require_capability('mod/slides:view', $context);
 
         // Get the slide type and the related slideinstance.
         $slidetype = helper::get_slide($slidetype, $cmid);

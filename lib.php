@@ -326,6 +326,14 @@ function mod_slides_output_fragment_load_next_slide($args) {
 
     // Render the page view of the slides.
     $nextslide = mod_slides\helper::get_next_slide($currentslideinstanceid);
+
+    // No further slide (the current one is the last): return nothing rather than
+    // trying to render an empty slide, which previously threw "slide - notfound"
+    // on the Activity Finished screen.
+    if (empty($nextslide) || !is_object($nextslide)) {
+        return '';
+    }
+
     $slideswidget = new mod_slides\widget($cm, $course);
     $result = $slideswidget->render_slides([$nextslide]);
     $js = $slideswidget->jsdata;

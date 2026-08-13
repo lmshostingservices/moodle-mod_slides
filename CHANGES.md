@@ -3,6 +3,28 @@
 All notable changes to the Slides activity module. Versions use Moodle's
 10-digit `YYYYMMDDXX` format.
 
+## 2026081214 (v1.4.14) - 2026-08-13
+- Teachers / site admins can now TRIAL activities like a student. Previously anyone
+  with editing rights was force-completed (`has_view_option()` returned completed),
+  so matching, flip cards and other interactions rendered pre-answered/locked with
+  green ticks. Their completion is now reset on each view, so every slide type shows
+  its fresh, interactive version. The forced-next navigation is also shown to them
+  (was hidden for editors), so their experience matches a student's.
+- Fixed the "mod_slides/slide - notfound" error on the Activity Finished screen: the
+  load-next-slide fragment tried to render a non-existent slide after the last one;
+  it now returns nothing when there is no next slide.
+- Backup no longer fatals: implemented the two missing helper methods
+  (backup_include_slides_areafiles / backup_include_listenaudio) so backup annotates
+  every slide media filearea; restore now re-adds all those areas (previously only
+  the intro image survived a restore).
+- Data-integrity fixes: corrected a wrong table name (`slides_slides` → `slides_type`)
+  in the slide-type lookup; fixed a mis-named completion field and timestamp on the
+  per-slide completion insert (`contentcount`/`timecreated` → `contentscount`/
+  `timemodified`); and the activity-completion insert now honours an explicit userid.
+- Secured the web services: `update_slidecompletion` and `update_fontsize` now
+  validate the activity context and capability (and `update_fontsize` no longer
+  targets a non-existent column).
+
 ## 2026081213 (v1.4.13) - 2026-08-13
 - Redesigned the slide pagination dots. The old numbered `<ol><li>` markup used
   Bootstrap-4 carousel-indicator classes that collapsed into one broken oval on

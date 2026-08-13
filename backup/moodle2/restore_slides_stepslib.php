@@ -204,6 +204,21 @@ class restore_slides_activity_structure_step extends restore_activity_structure_
      * @return void
      */
     protected function after_execute() {
+        // Restore the intro editor files.
         $this->add_related_files('mod_slides', 'intro', null);
+
+        // Restore every slide-media filearea declared by the slide-type subplugins
+        // (poster images, image/text areas, listen audio, etc.). The backup step
+        // annotates all mod_slides fileareas found in the activity context, so we
+        // re-add each declared area here — otherwise slide images and audio are lost.
+        $areas = [];
+        foreach (\mod_slides\slide_editor::get_slides_areafiles() as $list) {
+            $areas = array_merge($areas, (array) $list);
+        }
+        foreach (array_unique($areas) as $filearea) {
+            if ($filearea !== 'intro') {
+                $this->add_related_files('mod_slides', $filearea, null);
+            }
+        }
     }
 }

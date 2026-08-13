@@ -429,8 +429,8 @@ abstract class slideinstance implements renderable, templatable {
 
             $record = (object) $condition;
             $record->viewed = 1;
-            $record->contentcount = $contentcount;
-            $record->timecreated = time();
+            $record->contentscount = $contentcount;
+            $record->timemodified = time();
             $additional = [$contentviewedindex];
             $record->additional = implode(',', $additional);
             // Completion record.
@@ -487,7 +487,10 @@ abstract class slideinstance implements renderable, templatable {
         $completion = $this->get_completion($this->instanceid, $USER->id);
 
         $viewed = $completion ? $completion->viewed : 0;
-        $completed = ($completion && $completion->completion) || $hasviewoption;
+        // Note: teachers/admins are NOT force-completed here. Their completion is
+        // reset per view (see widget::export_for_template) so they experience each
+        // activity as a student and can trial the interactions.
+        $completed = ($completion && $completion->completion);
 
         if ($verifylisten) {
             $completed = $this->slidedata->options['forcelisten'] == self::FORCENONE ? true : $completed;

@@ -100,7 +100,7 @@ class widget implements \templatable, \renderable {
     public static function get_slide($slide, $cmid=null, $exist=MUST_EXIST) {
         global $DB;
         if (is_number($slide)) {
-            $slide = $DB->get_field('slides_slides', 'shortname', ['id' => $slide]);
+            $slide = $DB->get_field('slides_type', 'shortname', ['id' => $slide]);
         }
         $class = 'slidetype_'.$slide.'\slide';
         if (class_exists($class)) {
@@ -202,7 +202,15 @@ class widget implements \templatable, \renderable {
      * @return array
      */
     public function export_for_template(renderer_base $output): array {
-        global $PAGE;
+        global $PAGE, $USER;
+
+        // Teachers/site admins previewing the activity are never locked into a
+        // completed state: reset their completion each view so every slide type
+        // (matching, flip, etc.) shows its fresh, interactive version and they can
+        // trial exactly what a student sees.
+        if (has_capability('mod/slides:addinstance', $this->cmcontext)) {
+            \mod_slides\helper::reset_user_slides_completion($this->cm->instance, $USER->id);
+        }
 
         $slides = $this->get_slides_instance_slide_list();
         $widgets = $this->render_slides($slides);

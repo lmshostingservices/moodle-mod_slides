@@ -35,7 +35,7 @@ class helper {
         global $DB;
 
         if (is_number($slidetype)) {
-            $slidetype = $DB->get_field('slides_slides', 'shortname', ['id' => $slidetype]);
+            $slidetype = $DB->get_field('slides_type', 'shortname', ['id' => $slidetype]);
         }
 
         // echo $slidetype;
@@ -143,7 +143,7 @@ class helper {
             // If no record exists, insert a new record into the 'completion' table.
             $completion = new stdClass();
             $completion->slidesid = $slidesid;
-            $completion->userid = $USER->id;
+            $completion->userid = $userid ?: $USER->id;
             $completion->timecreated = time();
             $completion->slideviewed = $slideviewed;
             $completion->slidecount = $slidecount;
@@ -225,5 +225,77 @@ class helper {
         return $areas[$pluginname] ?? [];
     }
 
+    /**
+     * Return every mod_slides filearea that actually holds files in this activity's
+     * module context. This is used by the backup step to annotate all slide media
+     * (poster images, per-slide-type areas, and the dynamic "listen audio" areas
+     * whose names include a content-item index) so nothing is lost on backup.
+     *
+     * @param int $activityid The slides activity instance id (slides.id).
+     * @return string[] Distinct filearea names.
+     */
+    public static function backup_include_slides_areafiles($activityid) {
+        global $DB;
+
+        $cm = get_coursemodule_from_instance('slides', $activityid, 0, false, IGNORE_MISSING);
+        if ($cm) {
+            $context = \context_module::instance($cm->id);
+            $areas = $DB->get_fieldset_select(
+                'files',
+                'DISTINCT filearea',
+                'contextid = :ctx AND component = :comp',
+                ['ctx' => $context->id, 'comp' => 'mod_slides']
+            );
+            if (!empty($areas)) {
+                return array_values(array_unique($areas));
+            }
+        }
+
+        // Fallback: the static per-slide-type area list declared by the subplugins.
+        $all = [];
+        foreach (\mod_slides\slide_editor::get_slides_areafiles() as $list) {
+            $all = array_merge($all, (array) $list);
+        }
+        return array_values(array_unique($all));
+    }
+
+    /**
+     * Clear a user's completion for a slides activity so they always get the fresh,
+     * interactive version of every slide type (matching drag-drop, flip cards, etc.).
+     * Used for teachers/site admins previewing an activity so they can trial it and
+     * are never locked into a pre-completed state.
+     *
+     * @param int $slidesid The slides activity instance id (slides.id).
+     * @param int $userid
+     * @return void
+     */
+    public static function reset_user_slides_completion(int $slidesid, int $userid) {
+        global $DB;
+
+        // Overall activity completion for this user.
+        $DB->delete_records('slides_completion', ['slidesid' => $slidesid, 'userid' => $userid]);
+
+        // Per-slide completion for every slide in this activity.
+        $slideids = $DB->get_fieldset_select('slides_slide', 'id', 'slidesid = :sid', ['sid' => $slidesid]);
+        if (!empty($slideids)) {
+            list($insql, $inparams) = $DB->get_in_or_equal($slideids, SQL_PARAMS_NAMED);
+            $inparams['userid'] = $userid;
+            $DB->delete_records_select('slides_slide_completion',
+                "slideinstanceid $insql AND userid = :userid", $inparams);
+        }
+    }
+
+    /**
+     * The dynamic per-content "listen audio" fileareas. These are already covered by
+     * backup_include_slides_areafiles() (which reads every mod_slides filearea present
+     * in the context), so this returns an empty list — kept for API compatibility with
+     * the backup step, which merges the two results.
+     *
+     * @param int $activityid The slides activity instance id (slides.id).
+     * @return array List of objects each exposing a ->filearea property.
+     */
+    public static function backup_include_listenaudio($activityid) {
+        return [];
+    }
 
 }
