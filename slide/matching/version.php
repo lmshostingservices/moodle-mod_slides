@@ -23,4 +23,4 @@
  */
 
 $plugin->component = 'slidetype_matching';
-$plugin->version = 2026081202;
+$plugin->version = 2026081200;

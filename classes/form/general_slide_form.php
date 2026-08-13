@@ -384,7 +384,7 @@ abstract class general_slide_form extends \moodleform {
         }
 
         $mform->addGroup($splitbutton, 'splitbuttonar', '', [' '], false);
-        $mform->setType('splitbuttonar', PARAM_TEXT);
+        $mform->setType('splitbuttonar', PARAM_RAW);
     }
 
     /**

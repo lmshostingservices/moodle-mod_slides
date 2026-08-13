@@ -1,6 +1,6 @@
 define(['jquery', 'core/modal_factory', 'core/modal_events', 'core/str',
     'core/fragment', 'core/templates', 'core/notification', 'core/loadingicon', 'core/sortable_list'],
-    function ($, Modal, ModalEvents, Str, Fragment, Templates, Notification, LoadingIcon, SortableList) {
+    function($, Modal, ModalEvents, Str, Fragment, Templates, Notification, LoadingIcon, SortableList) {
 
     /* global slides */
     var slidesData = typeof slides !== 'undefined' ? slides : {};
@@ -60,7 +60,7 @@ define(['jquery', 'core/modal_factory', 'core/modal_events', 'core/str',
                 if (action === 'delete') {
                     e.preventDefault();
                     // Deleting requires confirmation.
-                    confirmDeleteElement(slide, function () {
+                    confirmDeleteElement(slide, function() {
                         deleteSlide(slideItem, slide, slideinstanceid, action);
                     });
                 }
@@ -189,7 +189,7 @@ define(['jquery', 'core/modal_factory', 'core/modal_events', 'core/str',
      * @param {Number} instanceId
      * @param {String} action Action of the current clicked element.
      */
-    var deleteSlide = function (moduleElement, slideshortname, slideinstanceid, action) {
+    var deleteSlide = function(moduleElement, slideshortname, slideinstanceid, action) {
         var args = {
             cmid: cmID,
             action: action,
@@ -208,9 +208,9 @@ define(['jquery', 'core/modal_factory', 'core/modal_events', 'core/str',
      * @param {String} slide
      * @param {Function} onconfirm function to execute on confirm
      */
-    var confirmDeleteElement = function (slide, onconfirm) {
+    var confirmDeleteElement = function(slide, onconfirm) {
         var slideTypename = 'slidetype_' + slide;
-        Str.get_string('pluginname', slideTypename).done(function () {
+        Str.get_string('pluginname', slideTypename).done(function() {
             var plugindata = {
                 slide: slide
             };
@@ -219,7 +219,7 @@ define(['jquery', 'core/modal_factory', 'core/modal_events', 'core/str',
                 {key: 'deletechecktype', component: 'mod_slides', param: plugindata},
                 {key: 'yes'},
                 {key: 'no'}
-            ]).done(function (s) {
+            ]).done(function(s) {
                     Notification.confirm(s[0], s[1], s[2], s[3], onconfirm);
                 }
             );
@@ -243,9 +243,9 @@ define(['jquery', 'core/modal_factory', 'core/modal_events', 'core/str',
             body: Fragment.loadFragment('mod_slides', 'get_slides_list', contextID, params),
             large: false,
         }).then(modal => {
-            modal.getRoot().on(ModalEvents.bodyRendered, function () {
+            modal.getRoot().on(ModalEvents.bodyRendered, function() {
                 modal.getRoot().get(0).querySelectorAll(SELECTORS.slideItem).forEach((e) => {
-                    e.addEventListener('click', function (e) {
+                    e.addEventListener('click', function(e) {
                         if (e.target.closest(SELECTORS.slideItem)) {
                             var slideType = e.currentTarget.dataset.slidetype;
 
@@ -266,11 +266,11 @@ define(['jquery', 'core/modal_factory', 'core/modal_events', 'core/str',
     };
 
     return {
-        init: function (contextid, cmid) {
+        init: function(contextid, cmid) {
             return slideEditor(contextid, cmid);
         },
 
-        loadFontExample: function (demoSelectors) {
+        loadFontExample: function(demoSelectors) {
             var form = document.querySelector(SELECTORS.editForm.form);
             if (form === null) {
                 return false;
