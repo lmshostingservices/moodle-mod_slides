@@ -151,3 +151,78 @@
 .nct-slides-carousel .slide-matching {
     height: 100%;
 }
+
+/* =====================================================================
+   PREMIUM MATCHING DRAG-DROP — chips, drop zones, states, touch, mobile.
+   ===================================================================== */
+#mod-nct-slides .activity-block .slides-que-block h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2733;
+    border: 1px solid #e6e9f0;
+    border-left: 4px solid var(--bs-primary, var(--primary, #0f6cbf));
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.08);
+    padding: 14px 16px;
+    margin-bottom: 18px;
+}
+#mod-nct-slides .activity-block .slides-ans-block { gap: 24px; }
+
+/* Drop zone */
+#mod-nct-slides .slide-matching-contents .drophome {
+    min-height: 58px;
+    border: 2px dashed #b9c6da;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #fbfdff, #f2f6fc);
+    transition: border-color .2s cubic-bezier(.22,.68,.24,1), background-color .2s ease, box-shadow .2s ease;
+}
+#mod-nct-slides .slide-matching-contents .valid-drag-over-drop {
+    border-color: var(--bs-primary, var(--primary, #0f6cbf)) !important;
+    background: rgba(15,108,191,.08) !important;
+    box-shadow: 0 0 0 4px rgba(15,108,191,.16);
+}
+
+/* Draggable chips */
+#mod-nct-slides .slide-matching-contents .draghome {
+    background: #fff;
+    border: 1px solid #e6e9f0;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.08);
+    padding: 12px 14px;
+    color: #1f2733;
+    cursor: grab;
+    touch-action: none; /* enable touch dragging instead of page scroll */
+    -webkit-user-select: none;
+    user-select: none;
+    transition: box-shadow .2s ease, transform .15s cubic-bezier(.22,.68,.24,1), border-color .2s ease, background-color .2s ease;
+}
+#mod-nct-slides .slide-matching-contents .draghome:hover {
+    box-shadow: 0 6px 16px rgba(16,24,40,.10);
+    transform: translateY(-1px);
+    border-color: #cbd6e6;
+}
+#mod-nct-slides .slide-matching-contents .draghome.beingdragged {
+    cursor: grabbing;
+    box-shadow: 0 18px 40px rgba(16,24,40,.18);
+    border-color: var(--bs-primary, var(--primary, #0f6cbf));
+    transform: scale(1.03);
+}
+#mod-nct-slides .slide-matching-contents .draghome.placed {
+    background: linear-gradient(160deg, #eafaf0, #ddf5e6);
+    border-color: var(--bs-success, var(--success, #16a34a));
+    cursor: default;
+}
+#mod-nct-slides .activity-block .slides-ans-block .slides-drop-block .slides-option i {
+    background: var(--bs-success, var(--success, #16a34a));
+    box-shadow: 0 2px 6px rgba(16,24,40,.16);
+}
+
+/* Mobile: stack the question and answer columns */
+@media (max-width: 767.98px) {
+    #mod-nct-slides .activity-block .slides-ans-block { flex-direction: column; gap: 12px; }
+    #mod-nct-slides .activity-block .slides-ans-block .slides-drop-block,
+    #mod-nct-slides .activity-block .slides-ans-block .slides-drag-block { max-width: 100%; }
+    #mod-nct-slides .slide-matching-contents .drophome { min-width: 0; }
+    #mod-nct-slides .slide-matching-contents .draghome { padding: 14px; }
+}

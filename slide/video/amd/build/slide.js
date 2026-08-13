@@ -25,14 +25,26 @@ define("slidetype_video/slide", ["exports", "jquery", "mod_slides/selectors", "c
       super(element, nctslides, options, false);
       this.currentListenItem = null;
       this.timeOut = null;
-      console.log(element);
+      if (this.clickToView) {
+        this.clickToView.remove();
+        this.clickToView = null;
+      }
     }
     startViewContent() {
       var contents = this.element.querySelectorAll(SELECTORS.listenItem);
       this.contentAnimation(contents);
       setTimeout(() => {
+        if (!contents.length) {
+          return;
+        }
         const videoElement = contents[0].querySelector('.video-js');
+        if (!videoElement) {
+          return;
+        }
         var player = VideoJS.getPlayer(videoElement.id);
+        if (!player) {
+          return;
+        }
         if (this.options.notCompleted || !this.options.completed) {
           player.play();
         }

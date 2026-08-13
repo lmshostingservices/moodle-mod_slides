@@ -86,6 +86,9 @@ define("slidetype_flip/slide", ["exports", "jquery", "mod_slides/selectors", "co
     doFlip(e, self) {
       const target = e.target.closest(SELECTORS.listenItem);
       var cardBlock = target.querySelector(SELECTORS.flipCardBlock);
+      if (window.NctSlidesFX) {
+        window.NctSlidesFX.play('flip');
+      }
       const anim = cardBlock.getAnimations()?.[0];
       if (cardBlock.dataset.flipped == 'true') {
         anim.play();

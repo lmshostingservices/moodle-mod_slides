@@ -6,6 +6,7 @@ import * as Fragment from "core/fragment";
 import * as Templates from 'core/templates';
 import * as LoadingIcon from 'core/loadingicon';
 import Notification from 'core/notification';
+import * as Effects from 'mod_slides/effects';
 
 const getRoot = () => document.querySelector(SELECTORS.root);
 
@@ -25,8 +26,29 @@ class NctSlides {
         this.generaldata = slidedata['general'] ?? {};
 
         this.carouselElem = getRoot().querySelector(SELECTORS.carousel);
+        this.celebrated = false;
+        Effects.init();
         this.scrollToSlides();
         this.initializeSlides();
+    }
+
+    /**
+     * Fire the celebration (confetti + achievement chime) once, when the learner
+     * reaches the final slide of the activity.
+     *
+     * @param {Element} activeEl the slide that just became active
+     */
+    maybeCelebrate(activeEl) {
+        if (this.celebrated || !activeEl) {
+            return;
+        }
+        const items = getRoot().querySelectorAll('.carousel-item.slide-item');
+        const isLast = items.length > 0 && items[items.length - 1] === activeEl;
+        const allAvailable = items.length >= (this.generaldata.slidescount || items.length);
+        if (isLast && allAvailable) {
+            this.celebrated = true;
+            Effects.celebrate();
+        }
     }
 
     initializeSlides() {
@@ -132,7 +154,14 @@ class NctSlides {
             var options = NextSlideData[slideinstanceid];
             if (options != undefined && 'customslidemodule' in options && options.customslidemodule != '') {
                 require([options.customslidemodule], function (customSlide) {
-                    const slide = new customSlide(element, self, options);
+                    // Slide-type modules are ES modules compiled to AMD, so the class is
+                    // the module's default export. Unwrap it before constructing (matches
+                    // the initial loadSlideInstances path) — otherwise `new customSlide`
+                    // throws "e is not a constructor" and the slide after the video never
+                    // renders. This on-demand path is used for every progressively-revealed
+                    // slide (and for teacher preview, which now runs the full reveal flow).
+                    const SlideClass = (customSlide && customSlide.default) ? customSlide.default : customSlide;
+                    const slide = new SlideClass(element, self, options);
                     self.slides[element.dataset.slideinstanceid] = slide;
                 });
             } else {
@@ -401,6 +430,8 @@ class NctSlides {
                 self.forceNextButton(e.relatedTarget);
             }
 
+            // Celebrate reaching the final slide (confetti + achievement chime).
+            self.maybeCelebrate(e.relatedTarget);
         });
 
         // Add the highlight on content during playing audio.

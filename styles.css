@@ -324,3 +324,153 @@ body.nctslidesview-onloading #page {
 .nct-slides-carousel .listen-content-item.box.animate__animated.viewed {
     visibility: hidden;
 }
+
+/* =====================================================================
+   PREMIUM MAKEOVER — world-class e-learning look & feel (mod_slides)
+   Design tokens + elevated cards, shading, hover, motion, mobile.
+   ===================================================================== */
+#mod-nct-slides {
+    --kc-primary: var(--bs-primary, var(--primary, #0f6cbf));
+    --kc-primary-ink: #0a4f8f;
+    --kc-success: var(--bs-success, var(--success, #16a34a));
+    --kc-radius: 18px;
+    --kc-radius-sm: 12px;
+    --kc-border: #e6e9f0;
+    --kc-ink: #1f2733;
+    --kc-muted: #5b6472;
+    --kc-shadow-sm: 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.08);
+    --kc-shadow-md: 0 6px 16px rgba(16,24,40,.08), 0 2px 6px rgba(16,24,40,.05);
+    --kc-shadow-lg: 0 18px 40px rgba(16,24,40,.14), 0 6px 12px rgba(16,24,40,.06);
+    --kc-ease: cubic-bezier(.22,.68,.24,1);
+}
+
+/* Stage / carousel container */
+.nct-slides-view-content .nctslides-content-wrapper .slides-list .carousel-inner {
+    background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+    border: 1px solid var(--kc-border);
+    border-radius: var(--kc-radius);
+    box-shadow: var(--kc-shadow-md);
+    padding: 26px;
+}
+.nct-slides-view-content .nctslides-content-wrapper .slides-list .carousel-inner .carousel-item {
+    padding: 8px 6px;
+}
+
+/* Slide title */
+.nct-slides-view-content .nctslides-content-wrapper .slides-list .carousel-inner .carousel-item .slide-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--kc-ink);
+    letter-spacing: -0.01em;
+    border: none;
+    background: transparent;
+    padding: 4px 0 14px;
+    margin: 0 0 16px;
+    border-bottom: 2px solid var(--kc-border);
+}
+
+/* Generic content cards (text/image/summary/introduction listen items) */
+.nct-slides-view-content .nctslides-content-wrapper .carousel-item .listen-content-item.box:not(.clicktoview):not(.hide),
+.nct-slides-view-content .nctslides-content-wrapper .carousel-item .slide-content-block {
+    border: 1px solid var(--kc-border);
+    border-radius: var(--kc-radius-sm);
+    background: #fff;
+    box-shadow: var(--kc-shadow-sm);
+    padding: 20px 22px;
+    color: var(--kc-ink);
+    line-height: 1.6;
+    transition: box-shadow .25s var(--kc-ease), transform .25s var(--kc-ease);
+}
+.nct-slides-view-content .nctslides-content-wrapper .carousel-item .listen-content-item.box:not(.clicktoview):not(.hide):hover,
+.nct-slides-view-content .nctslides-content-wrapper .carousel-item .slide-content-block:hover {
+    box-shadow: var(--kc-shadow-md);
+    transform: translateY(-2px);
+}
+
+/* Nav arrows — premium circular buttons */
+.nct-slides-view-content .nctslides-content-wrapper .slides-list .slides-navigation:not(.forcenext-button) .carousel-control a {
+    width: 54px;
+    height: 54px;
+    background: #fff;
+    border: 1px solid var(--kc-border);
+    box-shadow: var(--kc-shadow-md);
+    color: var(--kc-primary);
+    transition: transform .2s var(--kc-ease), box-shadow .2s var(--kc-ease), background-color .2s var(--kc-ease);
+}
+.nct-slides-view-content .nctslides-content-wrapper .slides-list .slides-navigation:not(.forcenext-button) .carousel-control a span {
+    color: var(--kc-primary);
+    transition: color .2s var(--kc-ease);
+}
+.nct-slides-view-content .nctslides-content-wrapper .slides-list .slides-navigation:not(.forcenext-button) .carousel-control a:hover {
+    background: var(--kc-primary);
+    transform: scale(1.08);
+    box-shadow: var(--kc-shadow-lg);
+}
+.nct-slides-view-content .nctslides-content-wrapper .slides-list .slides-navigation:not(.forcenext-button) .carousel-control a:hover span {
+    color: #fff;
+}
+.nct-slides-view-content .nctslides-content-wrapper .slides-list .slides-navigation:not(.forcenext-button) .carousel-control a:not(.next-slide-available) {
+    opacity: .55;
+    background: #eef1f6;
+}
+
+/* Forced next / finish buttons — pill CTAs */
+.nct-slides-view-content .nctslides-content-wrapper .slides-navigation.forcenext-button .carousel-control a {
+    width: auto;
+    min-width: 120px;
+    padding: 11px 24px;
+    border-radius: 999px;
+    font-weight: 600;
+    background: #eef1f6;
+    color: var(--kc-ink);
+    box-shadow: var(--kc-shadow-sm);
+    transition: transform .2s var(--kc-ease), box-shadow .2s var(--kc-ease), background-color .2s var(--kc-ease), color .2s var(--kc-ease);
+}
+.nct-slides-view-content .nctslides-content-wrapper .slides-navigation.forcenext-button .carousel-control a:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--kc-shadow-md);
+    background: var(--kc-primary);
+    color: #fff;
+}
+.nct-slides-view-content .nctslides-content-wrapper .slides-navigation.forcenext-button .carousel-control a.carousel-control-finish {
+    background: linear-gradient(135deg, var(--kc-success), #12823c);
+    color: #fff;
+}
+
+/* Click-to-view box — inviting */
+.nct-slides-view-content .slide-item .clicktoview.box {
+    border: 2px dashed #c8d2e0;
+    border-radius: var(--kc-radius-sm);
+    background: linear-gradient(180deg, #fbfdff, #f1f6fc);
+    color: var(--kc-muted);
+    font-weight: 500;
+    transition: border-color .25s var(--kc-ease), box-shadow .25s var(--kc-ease), transform .25s var(--kc-ease);
+}
+.nct-slides-view-content .slide-item .clicktoview.box:hover {
+    border-color: var(--kc-primary);
+    box-shadow: var(--kc-shadow-md);
+    transform: translateY(-2px);
+}
+
+/* Confetti canvas (created by the effects module) sits above everything. */
+.nctslides-confetti-canvas { position: fixed; inset: 0; pointer-events: none; }
+
+/* -------- Mobile-friendly: full responsiveness -------- */
+@media (max-width: 767.98px) {
+    .nct-slides-view-content .nctslides-content-wrapper .slides-list .carousel-inner {
+        padding: 16px;
+        border-radius: 14px;
+    }
+    .nct-slides-view-content .nctslides-content-wrapper .slides-list .slides-navigation:not(.forcenext-button) .carousel-control a {
+        width: 44px;
+        height: 44px;
+    }
+    /* Keep arrows on-canvas on small screens. */
+    .nct-slides-view-content .nctslides-content-wrapper .slides-list .slides-navigation:not(.forcenext-button) .carousel-control a.carousel-control-prev { margin-left: 2px; }
+    .nct-slides-view-content .nctslides-content-wrapper .slides-list .slides-navigation:not(.forcenext-button) .carousel-control a.carousel-control-next { margin-right: 2px; }
+    .nct-slides-view-content .nctslides-content-wrapper .carousel-item .slide-title { font-size: 19px; }
+    .nct-slides-view-content .nctslides-content-wrapper .carousel-item .listen-content-item.box:not(.clicktoview):not(.hide),
+    .nct-slides-view-content .nctslides-content-wrapper .carousel-item .slide-content-block { padding: 16px; }
+    .nct-slides-view-content .nctslides-content-wrapper .slides-navigation.forcenext-button .carousel-control { flex-wrap: wrap; gap: 8px; }
+    .nct-slides-view-content .nctslides-content-wrapper .slides-navigation.forcenext-button .carousel-control a { min-width: 96px; padding: 10px 16px; }
+}

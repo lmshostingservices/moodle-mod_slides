@@ -3,6 +3,42 @@
 All notable changes to the Slides activity module. Versions use Moodle's
 10-digit `YYYYMMDDXX` format.
 
+## 2026081216 (v1.5.0) - 2026-08-13 — Premium design + delight pass
+- Full visual makeover to a world-class e-learning look: a cohesive design-token
+  system (elevated cards, soft gradients, layered shadows, rounded corners, smooth
+  hover/motion) applied across the stage, nav arrows, pagination, and every slide
+  type's content boxes.
+- Flip cards rebuilt as real 3D flip cards with shaded front/back faces, hover lift,
+  and a "tap to flip" hint.
+- Matching drag activity redesigned: premium draggable chips (grab cursor, hover
+  lift, elevated drag shadow), inviting drop zones that glow on valid hover, and a
+  green "placed" state. Now works with TOUCH on mobile/tablet (touch-action:none on
+  the chips so a drag doesn't scroll the page).
+- Whole activity is mobile-responsive: arrows stay on-canvas, matching columns
+  stack, flip cards go full-width, padding/titles scale down.
+- Delight: a self-contained sound + confetti engine (mod_slides/effects) — no audio
+  files, all synthesized via Web Audio + canvas. Satisfying cues on drag pickup,
+  correct/incorrect placement, and card flips; on reaching the FINAL slide, a
+  confetti burst plus an ascending "achievement" chime. Respects
+  prefers-reduced-motion and degrades silently where audio is unavailable.
+
+## 2026081215 (v1.4.15) - 2026-08-13
+- CRITICAL: fixed "e is not a constructor" that stopped the slide AFTER the video
+  (and any progressively-revealed slide) from appearing. Two code paths build a
+  slide-type instance; the initial one already unwrapped the ES-module default
+  export, but `updateNextSlide` (the on-demand loader that reveals the next slide
+  once the current one is completed) called `new customSlide(...)` on the module
+  namespace instead of its `.default` class, throwing and aborting the reveal.
+  It now unwraps the default export exactly like the initial path. (This surfaced
+  for teachers too after v1.4.14, because teacher preview now runs the full
+  progressive-reveal flow rather than seeing everything pre-completed.)
+- Video slides now display immediately instead of behind a "Click to display and
+  read text" gate — the click-to-view overlay is dropped for the video slide type,
+  so the player shows straight away (learners can still press play if the browser
+  blocks autoplay).
+- Guarded the video player start against missing elements (no more silent throw if
+  a video slide has no player yet).
+
 ## 2026081214 (v1.4.14) - 2026-08-13
 - Teachers / site admins can now TRIAL activities like a student. Previously anyone
   with editing rights was force-completed (`has_view_option()` returned completed),

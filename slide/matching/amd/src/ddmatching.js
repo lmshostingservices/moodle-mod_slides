@@ -418,9 +418,15 @@ define([
             // console.log(this.response);
             // console.log(place);
             if (this.response[place] !== this.questionAnswer["place-" + place]) {
+                if (window.NctSlidesFX) {
+                    window.NctSlidesFX.play('wrong');
+                }
                 this.sendDragHome(drag);
                 return false;
             } else {
+                if (window.NctSlidesFX) {
+                    window.NctSlidesFX.play('correct');
+                }
                 this.verifyCompletion();
             }
 
@@ -926,6 +932,9 @@ define([
             e.preventDefault();
             var question = questionManager.getQuestionForEvent(e);
             if (question) {
+                if (window.NctSlidesFX) {
+                    window.NctSlidesFX.play('pickup');
+                }
                 question.handleDragStart(e);
             }
         },

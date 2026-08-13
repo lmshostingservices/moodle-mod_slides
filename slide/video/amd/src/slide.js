@@ -31,10 +31,14 @@ export default class Slide extends BaseSlide {
         this.currentListenItem = null;
         this.timeOut = null;
 
-        // Notifiy the video js plugin to update the audios.
-        // FilterEvents.notifyFilterContentUpdated(element);
-        console.log(element);
-
+        // A video should display on screen immediately — never behind a
+        // "Click to display and read text" gate. Drop any click-to-view overlay
+        // so the video player shows straight away (the learner can still press
+        // play on the player itself if the browser blocks autoplay).
+        if (this.clickToView) {
+            this.clickToView.remove();
+            this.clickToView = null;
+        }
     }
 
     startViewContent() {
@@ -44,8 +48,17 @@ export default class Slide extends BaseSlide {
 
         // Play the video after animation.
         setTimeout(() => {
+            if (!contents.length) {
+                return;
+            }
             const videoElement = contents[0].querySelector('.video-js');
+            if (!videoElement) {
+                return;
+            }
             var player = VideoJS.getPlayer(videoElement.id);
+            if (!player) {
+                return;
+            }
             if (this.options.notCompleted || !this.options.completed) {
                 player.play();
             }

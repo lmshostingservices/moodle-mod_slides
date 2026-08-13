@@ -105,3 +105,83 @@
     display: block;
 }
 /* End of Flip card slides */
+
+/* =====================================================================
+   PREMIUM FLIP CARDS — real 3D flip, shaded faces, hover, tap hint.
+   ===================================================================== */
+#mod-nct-slides .slide-flip-contents .slide-listen-contents { gap: 22px; }
+#mod-nct-slides .slide-flip .flip-card-content {
+    perspective: 1400px;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    min-height: 210px;
+    transition: transform .25s cubic-bezier(.22,.68,.24,1);
+}
+#mod-nct-slides .slide-flip-contents .listen-content-item:hover .flip-card-content { transform: translateY(-4px); }
+#mod-nct-slides .flip-card-block {
+    position: relative;
+    width: 100%;
+    min-height: 210px;
+    transform-style: preserve-3d;
+    transition: transform .6s cubic-bezier(.22,.68,.24,1);
+    cursor: pointer;
+}
+#mod-nct-slides .flip-card-content.child-flipped .flip-card-block.flipped,
+#mod-nct-slides .flip-card-block.flipped { transform: rotateY(180deg); }
+#mod-nct-slides .flip-card-block .flip-content-block {
+    position: absolute !important;
+    inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px 20px;
+    border-radius: 16px;
+    box-shadow: 0 6px 16px rgba(16,24,40,.10), 0 2px 6px rgba(16,24,40,.06);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    visibility: visible !important;
+    z-index: auto !important;
+    overflow: auto;
+    transition: box-shadow .2s ease;
+}
+#mod-nct-slides .flip-card-block .flip-question-side {
+    background: linear-gradient(160deg, #ffffff 0%, #e9f2fc 100%);
+    border: 1px solid #e6e9f0;
+    color: #1f2733;
+    font-weight: 600;
+}
+#mod-nct-slides .flip-card-block .flip-feedback-side {
+    transform: rotateY(180deg);
+    background: linear-gradient(160deg, var(--bs-primary, var(--primary, #0f6cbf)) 0%, #0a4f8f 100%);
+    color: #fff;
+}
+#mod-nct-slides .flip-card-block:hover .flip-content-block { box-shadow: 0 18px 40px rgba(16,24,40,.16); }
+/* Tap-to-flip hint on the question face */
+#mod-nct-slides .flip-card-block .flip-question-side::after {
+    content: "↻ Tap to flip";
+    position: absolute;
+    right: 14px;
+    bottom: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: var(--bs-primary, var(--primary, #0f6cbf));
+    opacity: .6;
+}
+#mod-nct-slides .flip-card-block .slides-option {
+    background: var(--bs-success, var(--success, #16a34a));
+    box-shadow: 0 2px 6px rgba(16,24,40,.18);
+}
+#mod-nct-slides .flip-card-block .flip-feedback-side .slides-option {
+    background: #fff;
+    color: var(--bs-primary, var(--primary, #0f6cbf));
+}
+@media (max-width: 767.98px) {
+    #mod-nct-slides .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide) { flex-basis: 100%; }
+    #mod-nct-slides .flip-card-block, #mod-nct-slides .slide-flip .flip-card-content { min-height: 180px; }
+}
