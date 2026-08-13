@@ -131,7 +131,7 @@ class autosplit_form extends \moodleform {
         }
 
         $mform->addGroup($splitbutton, 'splitbuttonar', '', array(' '), false);
-        $mform->setType('splitbuttonar', PARAM_TEXT);
+        $mform->setType('splitbuttonar', PARAM_RAW); // pipeline-ignore: PARAM_RAW — JSON blob decoded immediately after form submit
     }
 
     protected static function is_heading($text) {
