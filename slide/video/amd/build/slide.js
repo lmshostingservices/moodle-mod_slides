@@ -48,8 +48,29 @@ define("slidetype_video/slide", ["exports", "jquery", "mod_slides/selectors", "c
         if (this.options.notCompleted || !this.options.completed) {
           player.play();
         }
+        var needsWatch = this.options.forcelisten == _selectors.forceListen.audio || this.options.forcelisten == _selectors.forceListen.duration;
+        var alreadyDone = parseInt(this.element.dataset.viewed) || this.options.completed;
+        if (needsWatch && !alreadyDone) {
+          this.lockNav();
+        }
         this.videoEvents(player);
       }, this.interval);
+    }
+    lockNav() {
+      this.element.dataset.forcelocked = '1';
+      var rootEl = document.getElementById('mod-nct-slides');
+      if (rootEl) {
+        rootEl.classList.add('slides-forcelocked');
+      }
+    }
+    unlockNav() {
+      if (this.element.dataset.forcelocked) {
+        delete this.element.dataset.forcelocked;
+      }
+      var rootEl = document.getElementById('mod-nct-slides');
+      if (rootEl) {
+        rootEl.classList.remove('slides-forcelocked');
+      }
     }
     videoEvents(player) {
       const self = this;
@@ -58,15 +79,21 @@ define("slidetype_video/slide", ["exports", "jquery", "mod_slides/selectors", "c
       if (this.options.forcelisten == _selectors.forceListen.audio) {
         player.on('ended', function () {
           self.loadListenItem();
+          self.unlockNav();
         });
       } else if (this.options.forcelisten == _selectors.forceListen.duration && currentIndex in self.options.listenduration) {
         var timeUpdateEvent = function (e) {
           if (player.currentTime() >= self.options.listenduration[currentIndex]) {
             self.loadListenItem();
+            self.unlockNav();
             player.off('timeupdate', timeUpdateEvent);
           }
         };
         player.on('timeupdate', timeUpdateEvent);
+        player.on('ended', function () {
+          self.loadListenItem();
+          self.unlockNav();
+        });
       } else {
         self.loadListenItem();
       }

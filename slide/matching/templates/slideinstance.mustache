@@ -4,48 +4,60 @@
     <div class="slide-matching-contents">
 
         {{#listencontent}}
-        <div class="slide-listen-contents user-select-none">
+        <div class="slide-listen-contents matching-v2 user-select-none">
 
+            {{! ------------------------------------------------------------------ }}
+            {{! Left column: questions, each with its own equal-size drop zone.    }}
+            {{! Rendered through the base listencontent partial so the existing    }}
+            {{! reveal animation and completion flow are preserved unchanged.      }}
+            {{! ------------------------------------------------------------------ }}
             {{< mod_slides/listencontent}}
                 {{$content}}
-                    <!-- Matching Activity block -->
-                    <div class="activity-block">
+                    <!-- Matching Activity block (question + its drop only) -->
+                    <div class="activity-block matching-qrow">
                         <!-- Question block -->
                         <div class="slides-que-block">
-                            <h4>{{{content}}}</h4>
+                            <span class="matching-qnum">{{contentitemindex}}</span>
+                            <div class="matching-qtext"><h4>{{{content}}}</h4></div>
                         </div>
                         <!-- End of Question block -->
 
-                        <!-- Drag & Drop block -->
+                        <!-- Drop block -->
                         <div class="slides-ans-block">
-                            <!-- Drop block -->
                             <div class="slides-drop-block place{{contentitemindex}}">
-
                                 <div class="drophome">
                                     <span class="slides-drop-zone {{^viewed}}active{{/viewed}} drop place{{contentitemindex}} group1" data-dragzone="{{contentitemindex}}"></span>
                                     {{#viewed}}
-                                    <span class="draghome choice{{contentitemindex}} group1 placed inplace1" data-answercontentid="{{answercontentid}}">{{{answer}}}</span>
+                                    <span class="draghome choice{{contentitemindex}} group1 placed inplace1" data-answercontentid="{{correctanswercontentid}}">{{{correctanswer}}}</span>
                                     {{/viewed}}
                                 </div>
 
                                 <div class="slides-option {{#viewed}} matched {{/viewed}}">
                                     <i class="fa fa-check"></i>
                                 </div>
-
                             </div>
-                            <!-- End of Drop block -->
-                            {{^viewed}}
-                            <!-- Drag block -->
-                            <div class="slides-drag-block draggrouphomes1 group1">
-                                <span class="draghome choice{{contentitemindex}} group1" data-answercontentid="{{answercontentid}}">{{{answer}}}</span>
-                            </div>
-                            {{/viewed}}
-                            <!-- End of Drag block -->
                         </div>
+                        <!-- End of Drop block -->
                     </div>
-                    <!-- End of Answer block -->
+                    <!-- End of Activity block -->
                 {{/content}}
             {{/ mod_slides/listencontent}}
+
+            {{! ------------------------------------------------------------------ }}
+            {{! Answer stage: shuffled answers pooled centre-bottom. When active   }}
+            {{! only one is revealed at a time (managed by ddmatching.js).         }}
+            {{! ------------------------------------------------------------------ }}
+            {{^completed}}
+            <div class="matching-answer-stage">
+                <div class="matching-stage-hint">Drag or tap an answer into its matching box</div>
+                <div class="slides-drag-block draggrouphomes1 group1">
+                    {{#contentitems}}
+                    <span class="draghome choice{{contentitemindex}} group1 mv2-pending" data-answercontentid="{{answercontentid}}">{{{answer}}}</span>
+                    {{/contentitems}}
+                </div>
+            </div>
+            {{/completed}}
+
         </div>
         {{/listencontent}}
 

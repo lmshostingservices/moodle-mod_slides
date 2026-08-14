@@ -7,8 +7,8 @@
 }
 
 .slide-matching-contents {
-    height: calc(100% - 40px);
-    overflow: auto;
+    height: auto;
+    overflow: visible;   /* the activity is sized to fit the frame — no scrollbars at all */
 }
 .slide-matching-contents .draghome {
     width: 100%;
@@ -225,4 +225,388 @@
     #mod-nct-slides .activity-block .slides-ans-block .slides-drag-block { max-width: 100%; }
     #mod-nct-slides .slide-matching-contents .drophome { min-width: 0; }
     #mod-nct-slides .slide-matching-contents .draghome { padding: 14px; }
+}
+
+/* No per-question background "shapes" — because a dragged answer can go into any
+   drop target, boxing each question in its own card is misleading. Strip the outer
+   card so the layout is open, with clear spacing between questions. The question
+   label, drop zones and draggable chips keep their own styling. */
+#mod-nct-slides .carousel-item.slide-matching .listen-content-item.box,
+#mod-nct-slides .carousel-item.slide-matching .listen-content-item:not(.hide) {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    flex: 0 0 auto;
+}
+#mod-nct-slides .carousel-item.slide-matching .slide-listen-contents { gap: 10px; }
+#mod-nct-slides .carousel-item.slide-matching .activity-block { margin-bottom: 0; }
+
+/* =====================================================================
+   MATCHING v2 — two-column layout (question card + equal-size drop
+   rectangle), shuffled answers that fly in one at a time to centre-bottom,
+   drag AND tap-and-tap, drag-over just recolours the SAME rectangle.
+   Accents use the site theme primary (var(--bs-primary)). This block
+   overrides the older side-by-side per-row layout for .matching-v2 markup.
+   ===================================================================== */
+
+/* Stage: vertical stack of question rows, then the answer stage. */
+#mod-nct-slides .matching-v2.slide-listen-contents {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+}
+
+/* One question row = question card (left) + drop rectangle (right), IDENTICAL size.
+   CSS grid 1fr/1fr guarantees two exactly-equal columns (flex + content was giving the
+   question box ~33px more than the drop box). */
+#mod-nct-slides .matching-v2 .matching-qrow.activity-block {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    align-items: stretch;
+    margin: 0 !important;
+}
+/* Question box and drop target are IDENTICAL size — equal-width columns, and the row
+   stretches both to the same height. Consistency is the point in e-learning.
+   border-box is essential: without it the question card's padding+border (33px) get ADDED
+   on top of its flex width, making it wider than the drop box. With border-box the flex
+   algorithm distributes identical outer sizes, and the drop box's dashed border stops
+   adding height. */
+#mod-nct-slides .matching-v2 .matching-qrow .slides-que-block,
+#mod-nct-slides .matching-v2 .matching-qrow .slides-ans-block,
+#mod-nct-slides .matching-v2 .matching-qrow .slides-drop-block,
+#mod-nct-slides .matching-v2 .matching-qrow .drophome,
+#mod-nct-slides .matching-v2 .matching-qrow .drop.active {
+    box-sizing: border-box;
+}
+#mod-nct-slides .matching-v2 .matching-qrow .slides-que-block,
+#mod-nct-slides .matching-v2 .matching-qrow .slides-ans-block {
+    min-width: 0;
+    width: auto;      /* grid cell (1fr) controls width — don't force 50% inside the cell */
+    display: flex;
+    align-items: stretch;
+}
+#mod-nct-slides .matching-v2 .matching-qrow .slides-ans-block { gap: 0; }
+#mod-nct-slides .matching-v2 .matching-qrow .slides-ans-block .slides-drop-block {
+    max-width: none;
+    width: 100%;
+    display: flex;
+    align-items: stretch;
+}
+
+/* Question card. */
+#mod-nct-slides .matching-v2 .matching-qrow .slides-que-block {
+    background: #fff;
+    border: 1px solid #e6e9f0;
+    border-left: 4px solid var(--bs-primary, var(--primary, #4347cc));
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.08);
+    padding: 10px 14px;
+    min-height: 54px;
+    align-items: center;
+    gap: 10px;
+}
+#mod-nct-slides .matching-v2 .matching-qrow .matching-qnum {
+    flex: 0 0 auto;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--bs-primary, var(--primary, #4347cc));
+    border-radius: 50%;
+}
+#mod-nct-slides .matching-v2 .matching-qrow .matching-qtext { min-width: 0; }
+#mod-nct-slides .matching-v2 .matching-qrow .slides-que-block h4 {
+    /* override the standalone premium card look — inside v2 it's plain row text */
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #1f2733;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    line-height: 1.35;
+}
+
+/* Drop rectangle — exactly the same footprint as the question card. */
+#mod-nct-slides .matching-v2 .matching-qrow .drophome {
+    min-width: 0;
+    width: 100%;
+    min-height: 54px;
+    margin: 0;
+    border: 2px dashed #b9c6da;
+    border-radius: 12px;
+    background: #f7f9fc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: border-color .18s cubic-bezier(.22,.68,.24,1), background-color .18s ease, box-shadow .18s ease;
+}
+#mod-nct-slides .matching-v2 .matching-qrow .drophome .drop.active {
+    width: 100%;
+    height: auto;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9aa6b6;
+    font-size: 13px;
+}
+/* Empty-box hint text. */
+#mod-nct-slides .matching-v2 .matching-qrow .drophome .drop.active:empty::before {
+    content: "Drop the matching answer here";
+    color: #9aa6b6;
+    font-size: 13px;
+    padding: 0 8px;
+    text-align: center;
+}
+/* Drag-over: the SAME rectangle just recolours to the theme primary (no new shape). */
+#mod-nct-slides .matching-v2 .matching-qrow .drophome:has(.valid-drag-over-drop),
+#mod-nct-slides .matching-v2 .matching-qrow .drophome .valid-drag-over-drop {
+    border-color: var(--bs-primary, var(--primary, #4347cc)) !important;
+    background: rgba(67,71,204,.09) !important;
+    box-shadow: none;
+}
+/* Filled (correct answer placed): the rectangle turns success-green. */
+#mod-nct-slides .matching-v2 .matching-qrow .drophome:has(.draghome.placed) {
+    border-style: solid;
+    border-color: var(--bs-success, var(--success, #16a34a));
+    background: linear-gradient(160deg, #eafaf0, #dcf5e5);
+}
+#mod-nct-slides .matching-v2 .matching-qrow .drophome:has(.draghome.placed) .drop.active::before { content: none; }
+#mod-nct-slides .matching-v2 .matching-qrow .drophome .draghome.placed {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: #0f5132;
+    font-weight: 600;
+    width: 100%;
+    height: 100%;                /* fill the box… */
+    display: flex;               /* …and vertically centre the text (block text was top-aligned) */
+    align-items: center;
+    justify-content: flex-start; /* left-aligned */
+    text-align: left;
+    padding: 6px 36px 6px 16px;  /* keep the answer text clear of the tick on the right */
+    box-sizing: border-box;
+}
+/* Left-align the content within the filled drop box. When an answer is placed, the empty
+   drop-zone span was still occupying the LEFT half of the box and pushing the answer to the
+   right — hide it so the placed answer fills the box and reads from the left. */
+#mod-nct-slides .matching-v2 .matching-qrow .drophome:has(.draghome.placed) {
+    justify-content: flex-start;
+}
+#mod-nct-slides .matching-v2 .matching-qrow .drophome:has(.draghome.placed) .drop.active {
+    display: none !important;
+}
+#mod-nct-slides .matching-v2 .matching-qrow .drophome .draghome.placed {
+    flex: 1 1 auto;
+}
+/* Correct-answer tick sits neatly INSIDE the filled box (it was hanging off the right
+   edge at right:-15px and getting clipped). */
+#mod-nct-slides .matching-v2 .slides-drop-block { position: relative; }
+#mod-nct-slides .matching-v2 .slides-drop-block .slides-option {
+    position: absolute;
+    right: 10px;
+    left: auto;
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    z-index: 3;
+}
+#mod-nct-slides .matching-v2 .slides-drop-block .slides-option i {
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+    line-height: 22px;
+}
+
+/* Answer stage: current answer flies in from the right, sits centre-bottom. Compact so the
+   whole activity (questions + stage) fits the frame without a scrollbar. */
+#mod-nct-slides .matching-v2 .matching-answer-stage {
+    margin-top: 10px;
+    flex: 0 0 auto;
+    min-height: 66px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px;
+    /* No overflow:hidden here — it was CLIPPING the dragged chip as it moved up out of the
+       stage (chip "disappeared behind the drop targets"). The fly-in below uses a small,
+       contained slide so it doesn't need clipping. */
+}
+#mod-nct-slides .matching-v2 .matching-answer-stage .matching-stage-hint {
+    color: #5b6472;
+    font-size: 12px;
+    text-align: center;
+}
+#mod-nct-slides .matching-v2 .matching-answer-stage .slides-drag-block {
+    max-width: none;
+    width: auto;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-height: 46px;
+}
+/* Only the revealed (active) answer shows; pending + retired answers stay hidden. */
+#mod-nct-slides .matching-v2 .matching-answer-stage .draghome.mv2-pending,
+#mod-nct-slides .matching-v2 .matching-answer-stage .draghome.mv2-done {
+    display: none !important;
+}
+/* Drag placeholders are hidden — BUT when the engine marks one .active at drag start it
+   must occupy layout (visibility:hidden, not display:none) so its position anchors the
+   drag. Forcing display:none here is what made the chip teleport to (0,0) and vanish. */
+#mod-nct-slides .matching-v2 .draghome.dragplaceholder {
+    display: none;
+}
+#mod-nct-slides .matching-v2 .draghome.dragplaceholder.active {
+    display: inline-block;
+    visibility: hidden;
+}
+#mod-nct-slides .matching-v2 .matching-answer-stage .draghome {
+    width: auto;
+    /* Short/medium answers fit on one line; long sentences wrap inside the box with proper
+       padding instead of running edge-to-edge (nowrap made long answers overflow). */
+    max-width: min(94%, 720px);
+    white-space: normal;
+    overflow-wrap: anywhere;
+    background: #fff;
+    border: 1px solid #e6e9f0;
+    border-top: 3px solid var(--bs-primary, var(--primary, #4347cc));
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(16,24,40,.08), 0 2px 6px rgba(16,24,40,.05);
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2733;
+    text-align: center;
+    line-height: 1.4;
+    cursor: grab;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    box-sizing: border-box;
+}
+/* The dragged chip must keep EXACTLY the same shape/size as at rest — no scale, no
+   width collapse. The base engine CSS has `.active + .beingdragged { width:100% }` and
+   `.valid-drag-over-drop + .beingdragged { width:100% }`, which blow the chip up to full
+   width the moment it nears a drop — override all of them here. */
+#mod-nct-slides .matching-v2 .matching-answer-stage .draghome.beingdragged,
+#mod-nct-slides .matching-v2 .draghome.active + .draghome.beingdragged,
+#mod-nct-slides .matching-v2 .slides-drop-block .valid-drag-over-drop + .beingdragged,
+#mod-nct-slides .matching-v2 .draghome.beingdragged {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    width: auto !important;
+    max-width: 720px !important;
+    min-width: 0 !important;
+    padding: 12px 24px !important;
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    border-radius: 12px !important;
+    white-space: normal !important;
+    box-shadow: 0 18px 40px rgba(16,24,40,.22) !important;
+    background: #fff !important;
+    box-sizing: border-box !important;
+    z-index: 99999 !important;   /* stay ABOVE the drop targets while dragging */
+}
+/* One-shot fly-in: applied only when an answer is first revealed (class removed after it
+   plays). A wrong answer that bounces back home is mv2-active but NOT mv2-flyin, so it just
+   slides back to centre instead of flying in from the right like a new answer. */
+#mod-nct-slides .matching-v2 .matching-answer-stage .draghome.mv2-flyin {
+    animation: mv2flyin .5s cubic-bezier(.22,.68,.24,1) both;
+}
+@keyframes mv2flyin {
+    /* Small, contained slide-in from the right (was 340px, which overflowed and forced the
+       stage-clip that then hid the dragged chip). 60px reads as a slide without overflowing. */
+    from { opacity: 0; transform: translateX(60px) scale(.98); }
+    to   { opacity: 1; transform: none; }
+}
+/* Tap-and-tap: selected chip gets a ring; empty boxes invite a tap. */
+#mod-nct-slides .matching-v2 .matching-answer-stage .draghome.mv2-tapselected {
+    outline: 3px solid rgba(67,71,204,.4);
+    outline-offset: 2px;
+    border-color: var(--bs-primary, var(--primary, #4347cc));
+}
+#mod-nct-slides .matching-v2.matching-tapping .matching-qrow .drophome:not(:has(.draghome.placed)) {
+    cursor: pointer;
+    border-color: var(--bs-primary, var(--primary, #4347cc));
+    background: rgba(67,71,204,.05);
+}
+
+/* Reduced motion: skip the fly-in translate. */
+@media (prefers-reduced-motion: reduce) {
+    #mod-nct-slides .matching-v2 .matching-answer-stage .draghome.mv2-active { animation: none; }
+}
+
+/* Mobile: keep question + box side by side but a touch more compact. */
+@media (max-width: 767.98px) {
+    #mod-nct-slides .matching-v2 .matching-qrow.activity-block { gap: 10px; }
+    #mod-nct-slides .matching-v2 .matching-qrow .slides-que-block,
+    #mod-nct-slides .matching-v2 .matching-qrow .drophome { min-height: 56px; }
+    #mod-nct-slides .matching-v2 .matching-qrow .slides-que-block h4 { font-size: 13.5px; }
+    #mod-nct-slides .matching-v2 .matching-answer-stage .draghome { max-width: 92%; }
+}
+
+/* =====================================================================
+   MATCHING IN FULLSCREEN — grow rows, boxes and text to the viewport so the
+   activity FILLS the screen (the point of fullscreen). Uses vh/vmin sizing,
+   NOT transform:scale, so drag-drop hit-testing stays accurate.
+   ===================================================================== */
+#mod-nct-slides.slides-fullscreen .carousel-item.slide-matching.active .matching-v2,
+#mod-nct-slides:fullscreen .carousel-item.slide-matching.active .matching-v2 {
+    gap: 1.6vh;
+    justify-content: center;
+    height: 100%;
+}
+#mod-nct-slides.slides-fullscreen .matching-v2 .matching-qrow .slides-que-block,
+#mod-nct-slides:fullscreen .matching-v2 .matching-qrow .slides-que-block,
+#mod-nct-slides.slides-fullscreen .matching-v2 .matching-qrow .drophome,
+#mod-nct-slides:fullscreen .matching-v2 .matching-qrow .drophome {
+    min-height: 12vh;
+}
+#mod-nct-slides.slides-fullscreen .matching-v2 .slides-que-block h4,
+#mod-nct-slides:fullscreen .matching-v2 .slides-que-block h4,
+#mod-nct-slides.slides-fullscreen .matching-v2 .matching-qrow .drophome .drop.active,
+#mod-nct-slides:fullscreen .matching-v2 .matching-qrow .drophome .drop.active,
+#mod-nct-slides.slides-fullscreen .matching-v2 .matching-qrow .drophome .drop.active:empty::before,
+#mod-nct-slides:fullscreen .matching-v2 .matching-qrow .drophome .drop.active:empty::before,
+#mod-nct-slides.slides-fullscreen .matching-v2 .drophome .draghome.placed,
+#mod-nct-slides:fullscreen .matching-v2 .drophome .draghome.placed,
+#mod-nct-slides.slides-fullscreen .matching-answer-stage .draghome,
+#mod-nct-slides:fullscreen .matching-answer-stage .draghome {
+    font-size: clamp(16px, 2.1vmin, 28px);
+}
+#mod-nct-slides.slides-fullscreen .matching-v2 .matching-qrow .matching-qnum,
+#mod-nct-slides:fullscreen .matching-v2 .matching-qrow .matching-qnum {
+    width: 3.2vmin;
+    height: 3.2vmin;
+    font-size: 1.7vmin;
+}
+#mod-nct-slides.slides-fullscreen .matching-answer-stage .draghome,
+#mod-nct-slides:fullscreen .matching-answer-stage .draghome {
+    padding: 1.4vmin 2.6vmin;
+}
+#mod-nct-slides.slides-fullscreen .matching-answer-stage,
+#mod-nct-slides:fullscreen .matching-answer-stage {
+    min-height: 13vh;
+    margin-top: 1.6vh;
+}
+#mod-nct-slides.slides-fullscreen .matching-answer-stage .matching-stage-hint,
+#mod-nct-slides:fullscreen .matching-answer-stage .matching-stage-hint {
+    font-size: clamp(13px, 1.6vmin, 20px);
 }

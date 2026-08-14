@@ -3,6 +3,9 @@
         <div class="slides-parent">
             <div class="slides-list" >
                 <div class="nct-slides-carousel carousel slide" data-wrap="false"  data-interval="false" data-ride="carousel" id="nct-slides-carousel" style="{{{slidecontainerstyles}}}">
+                    <button type="button" class="slides-fullscreen-toggle" aria-label="{{#str}}fullscreen, mod_slides{{/str}}" title="{{#str}}fullscreen, mod_slides{{/str}}">
+                        <i class="fa fa-expand" aria-hidden="true"></i>
+                    </button>
                     <div class="carousel-inner h-100" >
                         <!-- Slide list. -->
                         {{#slides}} {{{.}}} {{/slides}}
@@ -37,16 +40,9 @@
                         {{^notnav}}
                         <div class="slides-navigation forcenext-button">
                             <div class="carousel-control">
-                                <a data-slide-target="forceprevbtn" data-slide-action="" class="carousel-control-prev" href="#nct-slides-carousel" role="button" data-slide="prev">
-                                    <!-- <span class="carousel-control-prev-icon" aria-hidden="true"></span> -->
-                                    <span class="">{{#str}}previous, mod_slides{{/str}}</span>
-                                </a>
-                                <a data-slide-target="forcenextbtn" data-slide-action="" class="carousel-control-next" href="#nct-slides-carousel" role="button" data-slide="next">
-                                    <!-- <span class="carousel-control-next-icon" aria-hidden="true"></span> -->
-                                    <span class="">{{#str}}next, mod_slides{{/str}}</span>
-                                </a>
+                                {{! Prev/Next are handled by the circular side arrows above; only the
+                                    Finish call-to-action (to move on to the next activity) lives here. }}
                                 <a data-slide-target="finishbtn" data-slide-action="" class="carousel-control-finish" href="{{{nextmoduleurl}}}" role="button">
-                                    <!-- <span class="carousel-control-next-icon" aria-hidden="true"></span> -->
                                     <span class="">{{#str}}finish, mod_slides{{/str}}</span>
                                 </a>
                             </div>
@@ -73,6 +69,94 @@ require(['jquery'], function() {
             firstDot.classList.add('current');
         }
     }
+
+    // Auto-pause any playing video ONLY once a slide change has actually COMPLETED (the
+    // `slid.bs.carousel` event), so a video the learner has navigated away from stops. We do
+    // NOT pause on the pre-transition `slide.bs.carousel` event or on raw nav-control clicks:
+    // those fire even when the navigation is vetoed by the force-watch gate, which would pause
+    // the current video without moving — and it would then appear "stuck" (paused, not
+    // advancing). Pausing strictly on `slid` means a vetoed click leaves the video playing.
+    (function() {
+        var $c = $('#nct-slides-carousel');
+        if (!$c.length) { return; }
+        var carousel = $c[0];
+        function pauseAllVideos() {
+            // Video.js players (this is what actually controls the YouTube tech).
+            try {
+                if (window.videojs && window.videojs.getAllPlayers) {
+                    window.videojs.getAllPlayers().forEach(function(p) { try { p.pause(); } catch (e) {} });
+                }
+            } catch (e) {}
+            carousel.querySelectorAll('video').forEach(function(v) { try { v.pause(); } catch (e) {} });
+            carousel.querySelectorAll('iframe').forEach(function(f) {
+                if (/youtube|vimeo/i.test(f.src || '')) {
+                    try {
+                        f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                        f.contentWindow.postMessage('{"method":"pause"}', '*'); // vimeo
+                    } catch (e) {}
+                }
+            });
+        }
+        $c.on('slid.bs.carousel', pauseAllVideos);
+    })();
+
+    // Fullscreen toggle: expand the whole player to fill the screen. Content is grown
+    // by layout (the same %-based slide inside a bigger stage), so proportions are kept
+    // and drag-drop coordinates stay correct (no CSS transform scaling).
+    (function() {
+        var view = document.getElementById('mod-nct-slides');
+        if (!view) { return; }
+        var btn = view.querySelector('.slides-fullscreen-toggle');
+        if (!btn) { return; }
+
+        var requestFs = view.requestFullscreen || view.webkitRequestFullscreen || view.msRequestFullscreen;
+        var exitFs = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+
+        function fsElement() {
+            return document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+        }
+        function sync() {
+            var active = fsElement() === view || view.classList.contains('slides-fullscreen-fallback');
+            view.classList.toggle('slides-fullscreen', !!active);
+            var icon = btn.querySelector('i');
+            if (icon) { icon.className = active ? 'fa fa-compress' : 'fa fa-expand'; }
+        }
+
+        btn.addEventListener('click', function() {
+            var active = fsElement() === view || view.classList.contains('slides-fullscreen-fallback');
+            if (!active) {
+                if (requestFs) {
+                    try {
+                        var p = requestFs.call(view);
+                        if (p && p.catch) { p.catch(function() { view.classList.add('slides-fullscreen-fallback'); sync(); }); }
+                    } catch (e) {
+                        view.classList.add('slides-fullscreen-fallback');
+                    }
+                } else {
+                    // No native fullscreen (older/iOS Safari): fixed-position fallback.
+                    view.classList.add('slides-fullscreen-fallback');
+                }
+            } else {
+                if (fsElement() === view && exitFs) {
+                    exitFs.call(document);
+                }
+                view.classList.remove('slides-fullscreen-fallback');
+            }
+            sync();
+        });
+
+        // Exit the fallback with the Escape key (native fullscreen handles Esc itself).
+        document.addEventListener('keydown', function(e) {
+            if ((e.key === 'Escape' || e.keyCode === 27) && view.classList.contains('slides-fullscreen-fallback')) {
+                view.classList.remove('slides-fullscreen-fallback');
+                sync();
+            }
+        });
+
+        document.addEventListener('fullscreenchange', sync);
+        document.addEventListener('webkitfullscreenchange', sync);
+        document.addEventListener('msfullscreenchange', sync);
+    })();
 })
 {{/js}}
 

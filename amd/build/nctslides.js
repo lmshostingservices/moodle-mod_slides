@@ -127,7 +127,11 @@ define("mod_slides/nctslides", ["exports", "jquery", "mod_slides/selectors", "mo
             completed: true
           }
         });
-        region.dispatchEvent(completionEvent);
+        try {
+          region.dispatchEvent(completionEvent);
+        } catch (e) {
+          window.console && window.console.warn && window.console.warn('mod_slides: completion toggle skipped', e);
+        }
       }
       return true;
     }
@@ -173,6 +177,9 @@ define("mod_slides/nctslides", ["exports", "jquery", "mod_slides/selectors", "mo
         if (current < 0 || targetIdx === current || targetIdx < 0 || targetIdx >= items.length) {
           return;
         }
+        if (targetIdx > current && items[current] && items[current].dataset.forcelocked === '1') {
+          return;
+        }
         const dirNext = targetIdx > current;
         const fromEl = items[current];
         const toEl = items[targetIdx];
@@ -203,6 +210,10 @@ define("mod_slides/nctslides", ["exports", "jquery", "mod_slides/selectors", "mo
           toEl.classList.remove(startClass, moveClass);
           toEl.classList.add('active');
           navBusy = false;
+          var lockRoot = document.getElementById('mod-nct-slides');
+          if (lockRoot) {
+            lockRoot.classList.toggle('slides-forcelocked', toEl.dataset.forcelocked === '1');
+          }
           const dots = getRoot().querySelectorAll('.slides-pagination-dots .slides-dot');
           dots.forEach((dot, di) => {
             dot.classList.toggle('current', di === targetIdx);
@@ -262,6 +273,9 @@ define("mod_slides/nctslides", ["exports", "jquery", "mod_slides/selectors", "mo
           }
         }
         var currentSlide = e.target.querySelector(_selectors.SELECTORS.activeSlide);
+        if (!currentSlide) {
+          return;
+        }
         var list = Array.from(currentSlide.querySelectorAll('audio')).filter(audio => !audio.paused);
         if (currentSlide.dataset.slideinstanceid in self.slides) {
           const slideInstance = self.slides[currentSlide.dataset.slideinstanceid];
@@ -306,11 +320,13 @@ define("mod_slides/nctslides", ["exports", "jquery", "mod_slides/selectors", "mo
       }, true);
     }
     forceNextButton(target) {
+      if (!target || !target.dataset) {
+        return;
+      }
       const nextButton = document.querySelector(_selectors.SELECTORS.forceNext);
       const finishButton = document.querySelector(_selectors.SELECTORS.finishButton);
       const availableSlidesCount = getRoot().querySelectorAll('.carousel-item.slide-item')?.length;
       const options = this.slides[target.dataset.slideinstanceid]?.options;
-      console.log('forceNextButton', target, availableSlidesCount, this.slides, target.dataset.slideinstanceid);
       const showFinishButton = () => {
         if (nextButton !== null) {
           nextButton.style.display = 'none';

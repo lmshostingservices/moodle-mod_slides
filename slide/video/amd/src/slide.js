@@ -63,10 +63,39 @@ export default class Slide extends BaseSlide {
                 player.play();
             }
 
+            // Gate forward navigation while a watch requirement is active and not yet met, so
+            // the learner cannot skip ahead (via Next or the pagination dots) before the min
+            // time / full video has elapsed. Cleared in videoEvents when the requirement is
+            // satisfied. Backward navigation stays available.
+            var needsWatch = (this.options.forcelisten == forceListen.audio
+                              || this.options.forcelisten == forceListen.duration);
+            var alreadyDone = parseInt(this.element.dataset.viewed) || this.options.completed;
+            if (needsWatch && !alreadyDone) {
+                this.lockNav();
+            }
+
             this.videoEvents(player);
 
         }, this.interval);
 
+    }
+
+    lockNav() {
+        this.element.dataset.forcelocked = '1';
+        var rootEl = document.getElementById('mod-nct-slides');
+        if (rootEl) {
+            rootEl.classList.add('slides-forcelocked');
+        }
+    }
+
+    unlockNav() {
+        if (this.element.dataset.forcelocked) {
+            delete this.element.dataset.forcelocked;
+        }
+        var rootEl = document.getElementById('mod-nct-slides');
+        if (rootEl) {
+            rootEl.classList.remove('slides-forcelocked');
+        }
     }
 
     videoEvents(player) {
@@ -78,20 +107,32 @@ export default class Slide extends BaseSlide {
 
         // Forcelisten audio means for the video slide it represents the completion of the entire video.
         if (this.options.forcelisten == forceListen.audio) {
+            // "Full video" requirement — unlock navigation once the video has ended.
             player.on('ended', function () {
                 self.loadListenItem();
+                self.unlockNav();
             });
         } else if (this.options.forcelisten == forceListen.duration && currentIndex in self.options.listenduration) {
 
+            // "Minimum time" requirement — unlock as soon as the required seconds have played.
             var timeUpdateEvent = function (e) {
                 if (player.currentTime() >= self.options.listenduration[currentIndex]) {
                     self.loadListenItem();
+                    self.unlockNav();
                     player.off('timeupdate', timeUpdateEvent);
                 }
             };
 
             player.on('timeupdate', timeUpdateEvent);
+
+            // Safety net: if the video is shorter than the required minimum, watching it to
+            // the end still satisfies the requirement (and prevents a stuck, never-unlocked slide).
+            player.on('ended', function () {
+                self.loadListenItem();
+                self.unlockNav();
+            });
         } else {
+            // No watch requirement — navigation is never locked for this slide.
             self.loadListenItem();
         }
 

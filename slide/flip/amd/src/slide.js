@@ -32,6 +32,66 @@ export default class Slide extends BaseSlide {
     initContentDisplay() {
         this.updateBoxHeight();
         super.initContentDisplay();
+        // Fit every answer to its card once layout has settled, and again on window resize,
+        // so long answers shrink to stay inside the card (above the flip hint) instead of
+        // overflowing into a scrollbox or covering the "Tap to flip back" text.
+        var self = this;
+        this.scheduleFitFaces();
+        if (!this._fitResizeBound) {
+            this._fitResizeBound = function() { self.scheduleFitFaces(); };
+            window.addEventListener('resize', this._fitResizeBound);
+        }
+    }
+
+    scheduleFitFaces() {
+        var self = this;
+        // Two rAFs: let the grid size its rows before we measure available height.
+        window.requestAnimationFrame(function() {
+            window.requestAnimationFrame(function() {
+                self.fitFaces();
+            });
+        });
+    }
+
+    /**
+     * Shrink each flip face's text until it fits the card's content area (above the hint zone).
+     * Runs on both faces, including the back face which is normally display:none — it is made
+     * measurable (position:absolute so nothing shifts) only for the measurement.
+     */
+    fitFaces() {
+        var MAX_FS = 15.5, MIN_FS = 9;
+        var faces = this.element.querySelectorAll('.flip-content-block');
+        faces.forEach(function(face) {
+            var content = face.querySelector('.content');
+            if (!content) {
+                return;
+            }
+            var cs = window.getComputedStyle(face);
+            var restore = null;
+            if (cs.display === 'none') {
+                restore = {display: face.style.display, visibility: face.style.visibility};
+                face.style.display = 'flex';
+                face.style.visibility = 'hidden';
+                cs = window.getComputedStyle(face);
+            }
+            var padTop = parseFloat(cs.paddingTop) || 20;
+            var padBottom = parseFloat(cs.paddingBottom) || 40;
+            var avail = face.clientHeight - padTop - padBottom;
+            if (avail > 24) {
+                var fs = MAX_FS;
+                content.style.fontSize = fs + 'px';
+                var guard = 0;
+                while (content.scrollHeight > avail && fs > MIN_FS && guard < 80) {
+                    fs -= 0.5;
+                    content.style.fontSize = fs + 'px';
+                    guard++;
+                }
+            }
+            if (restore) {
+                face.style.display = restore.display;
+                face.style.visibility = restore.visibility;
+            }
+        });
     }
 
     updateBoxHeight() {
@@ -114,22 +174,18 @@ export default class Slide extends BaseSlide {
             window.NctSlidesFX.play('flip');
         }
 
-        const anim = cardBlock.getAnimations()?.[0];
+        // Simple class toggle — the stylesheet's `transition: transform` on .flip-card-block
+        // performs the smooth 3D rotateY flip. (The old code added Animate.css .flipInX, whose
+        // rotateX keyframe + backface-visibility:visible fought the 3D flip, so cards did not
+        // flip cleanly on the live site.)
         if (cardBlock.dataset.flipped == 'true') {
-            anim.play();
             cardBlock.classList.remove('flipped');
             cardBlock.parentNode.classList.remove('child-flipped');
-            cardBlock.dataset.flipped = false;
+            cardBlock.dataset.flipped = 'false';
         } else {
-            if (anim !== undefined) {
-                anim.play();
-            } else {
-                cardBlock.classList.add('animate__animated');
-                cardBlock.classList.add('animate__flipInX');
-            }
             cardBlock.classList.add('flipped');
             cardBlock.parentNode.classList.add('child-flipped');
-            cardBlock.dataset.flipped = true;
+            cardBlock.dataset.flipped = 'true';
         }
 
         self.listentime = 0;
@@ -147,6 +203,9 @@ export default class Slide extends BaseSlide {
         } else {
             self.element.classList.remove('content-flipped');
         }
+
+        // Re-fit now the face is on screen (belt-and-braces; init already fits hidden faces).
+        self.scheduleFitFaces();
     }
 
     updateNextItem(completedIndex) {
@@ -264,45 +323,10 @@ export default class Slide extends BaseSlide {
 
     resizeAdditionalContent() {
         super.resizeAdditionalContent();
-
-        // Resize the flipped content.
-        this.element.querySelectorAll(SELECTORS.flipCardBlock).forEach((cardBlock) => {
-            var cardHeight = cardBlock.clientHeight;
-            cardBlock.dataset.flipped = 'true';
-
-            // Ensure the card is flipped.
-            cardBlock.classList.add('flipped');
-
-            // REsize the flipped content font size.
-            cardBlock.style.maxHeight = cardHeight + 'px';
-
-            // Resize the content.
-            const feedbackSide = cardBlock.querySelector(SELECTORS.flipFeedback);
-
-            if (feedbackSide) {
-
-                let fontSize = parseFloat(window.getComputedStyle(feedbackSide).fontSize); // Start with a base font size
-                feedbackSide.style.fontSize = `${fontSize}px`;
-
-                // Increase font size until it reaches the height of the card block
-                while (feedbackSide.scrollHeight <= cardHeight && fontSize < cardHeight && fontSize < 35) {
-                    fontSize++;
-                    feedbackSide.style.fontSize = `${fontSize}px`;
-                }
-
-                // Decrease font size if it exceeds the height of the card block
-                while (feedbackSide.scrollHeight > cardHeight && fontSize > 9) {
-                    fontSize--;
-                    feedbackSide.style.fontSize = `${fontSize}px`;
-                }
-            }
-
-            // Return the flipped card to the original state.
-            cardBlock.classList.remove('flipped');
-            cardBlock.dataset.flipped = 'false';
-
-        });
-
+        // The old routine grew the back-face font up to 35px to fill the card, which is what
+        // made long answers overflow and cover the hint. Replaced by fitFaces(), which shrinks
+        // each answer to fit the area above the hint zone.
+        this.scheduleFitFaces();
     }
 }
 // Slide;

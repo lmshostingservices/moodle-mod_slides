@@ -162,6 +162,7 @@ $string['previous'] = 'Previous';
 $string['next'] = 'Next';
 $string['slide'] = 'Slide';
 $string['finish'] = 'Finish';
+$string['fullscreen'] = 'Toggle fullscreen';
 $string['slides:addinstance'] = 'Add a new Slides activity';
 $string['slides:view'] = 'View Slides activity';
 $string['slides:viewslideeditor'] = 'View and use the slide editor';

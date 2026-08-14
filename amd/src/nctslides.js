@@ -194,7 +194,15 @@ class NctSlides {
                 }
             });
 
-            region.dispatchEvent(completionEvent);
+            // Guard: Moodle's core completion reactive component can throw
+            // "Reactive components needs a main DOM element" if the completion UI isn't on
+            // the page (e.g. some teacher/preview states). That must never abort our slide
+            // flow or the whole activity renders blank.
+            try {
+                region.dispatchEvent(completionEvent);
+            } catch (e) {
+                window.console && window.console.warn && window.console.warn('mod_slides: completion toggle skipped', e);
+            }
         }
 
         return true;
@@ -282,6 +290,15 @@ class NctSlides {
                 return;
             }
 
+            // Force-watch gate: block FORWARD navigation (Next arrow OR pagination dots) while
+            // the currently-active slide still requires watching — the min time / full video
+            // set by the teacher has not yet elapsed. The lock flag lives on the slide element
+            // (set/cleared by the video slide), so backward navigation is always allowed and the
+            // gate follows the correct slide as the learner moves around.
+            if (targetIdx > current && items[current] && items[current].dataset.forcelocked === '1') {
+                return;
+            }
+
             const dirNext = targetIdx > current;
             const fromEl = items[current];
             const toEl = items[targetIdx];
@@ -320,6 +337,11 @@ class NctSlides {
                 toEl.classList.remove(startClass, moveClass);
                 toEl.classList.add('active');
                 navBusy = false;
+                // Keep the disabled-nav styling in sync with the newly-active slide's lock state.
+                var lockRoot = document.getElementById('mod-nct-slides');
+                if (lockRoot) {
+                    lockRoot.classList.toggle('slides-forcelocked', toEl.dataset.forcelocked === '1');
+                }
                 // Move the "current" highlight on the pagination dots to match.
                 const dots = getRoot().querySelectorAll('.slides-pagination-dots .slides-dot');
                 dots.forEach((dot, di) => {
@@ -395,6 +417,9 @@ class NctSlides {
 
             // Handle the audio play and pause on during moving the slides.
             var currentSlide = e.target.querySelector(SELECTORS.activeSlide);
+            if (!currentSlide) {
+                return;
+            }
             var list = Array.from(currentSlide.querySelectorAll('audio')).filter((audio) => !audio.paused);
 
             if (currentSlide.dataset.slideinstanceid in self.slides) {
@@ -456,13 +481,18 @@ class NctSlides {
 
     forceNextButton(target) {
 
+        // Guard: on the "Activity Finished" screen there may be no active slide-item,
+        // so the caller can pass null. Reading target.dataset then threw
+        // "Cannot read properties of undefined (reading 'dataset')".
+        if (!target || !target.dataset) {
+            return;
+        }
+
         const nextButton = document.querySelector(SELECTORS.forceNext);
         const finishButton = document.querySelector(SELECTORS.finishButton);
         // List of available slides.
         const availableSlidesCount = getRoot().querySelectorAll('.carousel-item.slide-item')?.length;
         const options = this.slides[target.dataset.slideinstanceid]?.options; // Current active slide options.
-
-        console.log('forceNextButton', target, availableSlidesCount, this.slides, target.dataset.slideinstanceid);
 
 
         const showFinishButton = () => {

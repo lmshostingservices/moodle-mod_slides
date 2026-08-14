@@ -134,54 +134,200 @@
     inset: 0 !important;
     top: 0 !important;
     left: 0 !important;
+    /* Both faces MUST be identical size. The back face carries width:100% from the base
+       CSS; with the default content-box its 44px padding was ADDED on top (front 257 vs
+       back 301). border-box + explicit 100%/100% pins both faces to the card exactly. */
+    box-sizing: border-box !important;
+    width: 100% !important;
+    height: 100% !important;
     display: flex !important;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 24px 20px;
-    border-radius: 16px;
-    box-shadow: 0 6px 16px rgba(16,24,40,.10), 0 2px 6px rgba(16,24,40,.06);
+    /* Bottom padding reserves a fixed zone for the "Tap to flip" hint so answer text can
+       never sit on top of it. Text is auto-fitted by JS (fitFaces) to stay inside the area
+       ABOVE this zone, so overflow is hidden (no cramped scrollbar). */
+    padding: 20px 22px 40px;
+    border-radius: 18px;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
     visibility: visible !important;
     z-index: auto !important;
-    overflow: auto;
-    transition: box-shadow .2s ease;
+    overflow: hidden;
+    transition: box-shadow .2s ease, transform .2s ease;
 }
+/* The text block itself never encroaches on the hint zone. */
+#mod-nct-slides .flip-card-block .flip-content-block .content {
+    max-height: 100%;
+    overflow: hidden;
+}
+/* Front: SOFT tint of the site primary (not white-on-white). color-mix derives the tint
+   from the actual theme primary; the plain colour before it is the fallback. */
 #mod-nct-slides .flip-card-block .flip-question-side {
-    background: linear-gradient(160deg, #ffffff 0%, #e9f2fc 100%);
-    border: 1px solid #e6e9f0;
+    background: #eef0fb;
+    background: linear-gradient(160deg,
+        color-mix(in srgb, var(--bs-primary, #4347cc) 7%, #ffffff) 0%,
+        color-mix(in srgb, var(--bs-primary, #4347cc) 18%, #ffffff) 100%);
+    border: 1px solid rgba(67,71,204,.18);
+    border: 1px solid color-mix(in srgb, var(--bs-primary, #4347cc) 22%, #ffffff);
     color: #1f2733;
-    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(16,24,40,.05), 0 8px 24px rgba(16,24,40,.07);
 }
+/* Back: richer gradient of the same primary, white text. */
 #mod-nct-slides .flip-card-block .flip-feedback-side {
     transform: rotateY(180deg);
-    background: linear-gradient(160deg, var(--bs-primary, var(--primary, #0f6cbf)) 0%, #0a4f8f 100%);
+    background: #4347cc;
+    background: linear-gradient(165deg,
+        var(--bs-primary, #4347cc) 0%,
+        color-mix(in srgb, var(--bs-primary, #4347cc) 68%, #ffffff) 100%);
     color: #fff;
+    box-shadow: 0 8px 26px rgba(67,71,204,.26);
 }
-#mod-nct-slides .flip-card-block:hover .flip-content-block { box-shadow: 0 18px 40px rgba(16,24,40,.16); }
-/* Tap-to-flip hint on the question face */
-#mod-nct-slides .flip-card-block .flip-question-side::after {
-    content: "↻ Tap to flip";
-    position: absolute;
-    right: 14px;
-    bottom: 12px;
-    font-size: 11px;
+#mod-nct-slides .flip-card-block:hover .flip-question-side { box-shadow: 0 12px 30px rgba(16,24,40,.12); }
+
+/* Question / answer sit as CLEAN TEXT on the card — no inner pill, box or padding. */
+#mod-nct-slides .flip-card-block .flip-content-block .content {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0;
+    max-width: 92%;
+    font-size: 15.5px;
     font-weight: 600;
-    letter-spacing: .02em;
-    color: var(--bs-primary, var(--primary, #0f6cbf));
-    opacity: .6;
+    line-height: 1.45;
 }
-#mod-nct-slides .flip-card-block .slides-option {
-    background: var(--bs-success, var(--success, #16a34a));
-    box-shadow: 0 2px 6px rgba(16,24,40,.18);
+#mod-nct-slides .flip-card-block .flip-content-block .content p,
+#mod-nct-slides .flip-card-block .flip-content-block .content h1,
+#mod-nct-slides .flip-card-block .flip-content-block .content h2,
+#mod-nct-slides .flip-card-block .flip-content-block .content h3,
+#mod-nct-slides .flip-card-block .flip-content-block .content h4 {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 0 6px !important;
+    font-size: inherit;
 }
-#mod-nct-slides .flip-card-block .flip-feedback-side .slides-option {
-    background: #fff;
-    color: var(--bs-primary, var(--primary, #0f6cbf));
+#mod-nct-slides .flip-card-block .flip-feedback-side .content { font-weight: 500; }
+
+/* Remove the green tick / option clutter from the faces entirely. */
+#mod-nct-slides .flip-card-block .slides-option { display: none !important; }
+
+/* One subtle, centred flip affordance per face. */
+#mod-nct-slides .flip-card-block .flip-question-side::after {
+    content: "Tap to flip";
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 12px;
+    text-align: center;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #9aa6b6;
+}
+#mod-nct-slides .flip-card-block .flip-feedback-side::after {
+    content: "Tap to flip back";
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 12px;
+    text-align: center;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.72);
 }
 @media (max-width: 767.98px) {
     #mod-nct-slides .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide) { flex-basis: 100%; }
     #mod-nct-slides .flip-card-block, #mod-nct-slides .slide-flip .flip-card-content { min-height: 180px; }
+}
+
+/* =====================================================================
+   FLIP CARDS in the consistent-height frame — the shared slide frame sets a
+   fixed height and flex-centres content; the flip grid's own height:100% was
+   making its rows stretch (cards too tall / "weird"). Let the grid be its
+   natural height and centre it, with equal-height cards per row.
+   ===================================================================== */
+#mod-nct-slides .carousel-item.slide-flip.active .slide-flip,
+#mod-nct-slides .carousel-item.slide-flip.active .slide-flip-contents,
+#mod-nct-slides .carousel-item.slide-flip.active .slide-flip-contents .slide-listen-contents {
+    height: auto;
+    overflow: visible;
+}
+#mod-nct-slides .carousel-item.slide-flip.active .slide-flip-contents .slide-listen-contents {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);   /* 3 across, 2 down — fits above the fold */
+    gap: 18px;
+    align-content: center;
+    justify-content: stretch;
+    margin: 0 auto;
+    /* Use the FULL frame width so each card is as wide as possible — wider cards fit more
+       words per line, so long answers wrap into far fewer lines and no longer overflow into
+       a cramped scrollbox. (Was capped at 1000px, which left the cards narrow.) */
+    max-width: none;
+    width: 100%;
+}
+#mod-nct-slides .carousel-item.slide-flip.active .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide) {
+    flex: none;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+}
+@media (max-width: 767.98px) {
+    #mod-nct-slides .carousel-item.slide-flip.active .slide-flip-contents .slide-listen-contents {
+        grid-template-columns: 1fr;
+        max-width: 460px;
+    }
+}
+/* Sensible card height that fits two rows of three inside the frame. */
+#mod-nct-slides .carousel-item.slide-flip.active .flip-card-content,
+#mod-nct-slides .carousel-item.slide-flip.active .flip-card-block {
+    min-height: 210px;
+    height: 100%;
+}
+@media (max-width: 767.98px) {
+    #mod-nct-slides .carousel-item.slide-flip.active .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide) {
+        flex-basis: 100%;
+        max-width: 100%;
+    }
+}
+
+/* Belt-and-braces: whatever markup the question/answer content uses, it renders as clean
+   text on the card — strip any inherited box/pill from every descendant of a flip face. */
+#mod-nct-slides .flip-card-block .flip-content-block .content,
+#mod-nct-slides .flip-card-block .flip-content-block .content * {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* =====================================================================
+   FLIP STACKING — a flipping card's back face rotates toward the viewer; without
+   a raised z-index the NEXT row (painted later) can occlude it, so a top-row card
+   appeared to "disappear" when flipped. Lift the active/flipping card above its
+   neighbours. Each card keeps its own perspective so they flip independently.
+   ===================================================================== */
+#mod-nct-slides .carousel-item.slide-flip.active .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide) {
+    position: relative;
+    z-index: 1;
+}
+#mod-nct-slides .carousel-item.slide-flip.active .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide):has(.flip-card-block.flipped),
+#mod-nct-slides .carousel-item.slide-flip.active .slide-flip-contents .slide-listen-contents .listen-content-item:not(.hide):has(.flip-card-content.child-flipped) {
+    z-index: 30;
+}
+/* Fallback for engines without :has() — raise the flipped card's own context too. */
+#mod-nct-slides .carousel-item.slide-flip.active .flip-card-content.child-flipped,
+#mod-nct-slides .carousel-item.slide-flip.active .flip-card-block.flipped {
+    position: relative;
+    z-index: 30;
 }

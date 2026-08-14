@@ -112,6 +112,10 @@ class slideinstance extends \mod_slides\slideinstance {
                     'contentitemindex' => $index,
                     'content' => $text,
                     'answer' => '',
+                    // The correct answer for THIS question (used to render the completed/preview view
+                    // where each drop should already show its correct match, not a shuffled one).
+                    'correctanswer' => format_string($content->answer),
+                    'correctanswercontentid' => $content->id,
                     'viewed' => $viewed, // Viewed status of this slide.
                     'currentitem' => true,
                     'itemcompleted' => $viewed ? true : false,

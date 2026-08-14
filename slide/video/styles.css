@@ -61,3 +61,28 @@
     width: 100%;
 }
 /* End of Video slides */
+
+/* =====================================================================
+   HOVER OVERLAY FADE — Video.js shows a dark control-bar/gradient scrim while the
+   pointer is over the player and, by default, fades it out over ~1s once the user
+   goes inactive, so the dark overlay "stays too long" after you move off the video.
+   Cut the fade-out to a snappy 0.2s so it disappears almost immediately on mouse-out.
+   ===================================================================== */
+#mod-nct-slides .carousel-item.slide-video .video-js .vjs-control-bar {
+    transition: opacity .2s ease, visibility .2s ease !important;
+}
+#mod-nct-slides .carousel-item.slide-video .video-js.vjs-user-inactive .vjs-control-bar,
+#mod-nct-slides .carousel-item.slide-video .video-js.vjs-user-inactive.vjs-playing .vjs-control-bar {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity .2s ease, visibility .2s ease !important;
+}
+/* Any gradient scrim / title bar Video.js paints fades on the same short timing. */
+#mod-nct-slides .carousel-item.slide-video .video-js .vjs-gradient-overlay,
+#mod-nct-slides .carousel-item.slide-video .video-js .vjs-title-bar {
+    transition: opacity .2s ease, visibility .2s ease !important;
+}
+#mod-nct-slides .carousel-item.slide-video .video-js.vjs-user-inactive .vjs-gradient-overlay,
+#mod-nct-slides .carousel-item.slide-video .video-js.vjs-user-inactive .vjs-title-bar {
+    opacity: 0 !important;
+}

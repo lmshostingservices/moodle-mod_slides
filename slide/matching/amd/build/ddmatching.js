@@ -61,6 +61,8 @@ define("slidetype_matching/ddmatching", [
     function DragDropToTextQuestion(containerId, readOnly, response) {
         this.containerId = containerId;
         this.questionAnswer = {};
+        // Currently tap-selected drag (for tap-and-tap mobile placement). Null when nothing selected.
+        this.tapDrag = null;
         if (readOnly) {
             this.getRoot().addClass('slide_matching-readonly');
         }
@@ -69,7 +71,53 @@ define("slidetype_matching/ddmatching", [
         this.positionDrags();
 
         this.response = response;
+
+        // Flag the container as v2 so the tap-and-tap delegated handlers activate.
+        if (this.getRoot().find('.matching-answer-stage').length) {
+            this.getRoot().addClass('matching-v2-active');
+        }
+
+        // v2 answer stage: reveal the answers one at a time (fly-in). Guarded so that
+        // if anything unexpected happens the base drag-drop still works with all answers shown.
+        try {
+            this.revealNextDrag();
+        } catch (ex) {
+            // Fallback: expose every answer so the activity remains fully usable.
+            this.getRoot().find('.draghome.mv2-pending').removeClass('mv2-pending').addClass('mv2-active');
+        }
     }
+
+    /**
+     * v2 answer stage helper: reveal the next un-placed answer in the pooled stage.
+     *
+     * Only applies when the slide uses the v2 two-column layout (a .matching-answer-stage
+     * is present). Answers carry the class "mv2-pending" until revealed, at which point they
+     * become "mv2-active" (which the stylesheet flies in to centre-bottom). When every answer
+     * has been placed, the stage is emptied. On non-v2 markup this is a no-op.
+     */
+    DragDropToTextQuestion.prototype.revealNextDrag = function() {
+        var root = this.getRoot();
+        if (!root.find('.matching-answer-stage').length) {
+            return; // Not the v2 layout - nothing to sequence.
+        }
+        // Anything currently active but already placed is done - retire it from the stage.
+        root.find('.draghome.mv2-active.placed').removeClass('mv2-active').addClass('mv2-done');
+        // If an answer is still active and unplaced, leave it on stage (waiting for the user).
+        if (root.find('.draghome.mv2-active').not('.placed').not('.dragplaceholder').length) {
+            return;
+        }
+        // Reveal the next pending answer (server already shuffled the pool order).
+        // The fly-in is a ONE-SHOT: add mv2-flyin only now, and strip it once it has played,
+        // so a wrong answer that bounces back home does NOT re-trigger the fly-in (which made
+        // it look like a brand-new answer).
+        var next = root.find('.draghome.mv2-pending').not('.dragplaceholder').not('.placed').first();
+        if (next.length) {
+            next.removeClass('mv2-pending').addClass('mv2-active mv2-flyin');
+            setTimeout(function() {
+                next.removeClass('mv2-flyin');
+            }, 600);
+        }
+    };
 
     /**
      * In each group, resize all the items to be the same size.
@@ -265,6 +313,19 @@ define("slidetype_matching/ddmatching", [
             return;
         }
 
+        // Pin the chip's CURRENT rendered width before it is lifted. Once `.beingdragged`
+        // makes it position:absolute, an `auto` width would be recomputed shrink-to-fit
+        // against a different containing block, so the chip re-wraps and changes shape
+        // mid-drag (visible on the live site, not in the fixed-width preview). Locking the
+        // pixel width keeps the box identical while it moves; handleDragMoved clears it on
+        // landing so the resting/placed width rules take over again.
+        if (drag[0] && drag[0].getBoundingClientRect) {
+            var mv2StartWidth = Math.round(drag[0].getBoundingClientRect().width);
+            if (mv2StartWidth > 0) {
+                drag[0].style.setProperty('width', mv2StartWidth + 'px', 'important');
+            }
+        }
+
         drag.addClass('beingdragged');
         var currentPlace = this.getClassnameNumericSuffix(drag, 'inplace');
         if (currentPlace !== null) {
@@ -430,10 +491,19 @@ define("slidetype_matching/ddmatching", [
                 this.verifyCompletion();
             }
 
-            drag.removeClass('unplaced')
+            drag.removeClass('unplaced mv2-active mv2-tapselected')
                 .addClass('placed inplace' + this.getPlace(drop));
             drag.attr('tabindex', 0);
             this.animateTo(drag, drop);
+
+            // Clear any tap selection and fly in the next answer (v2 stage; no-op otherwise).
+            this.tapDrag = null;
+            this.getRoot().removeClass('matching-tapping').find('.mv2-tapselected').removeClass('mv2-tapselected');
+            try {
+                this.revealNextDrag();
+            } catch (ex) {
+                this.getRoot().find('.draghome.mv2-pending').removeClass('mv2-pending').addClass('mv2-active');
+            }
         }
     };
 
@@ -910,7 +980,14 @@ define("slidetype_matching/ddmatching", [
                 .on('keydown',
                     '.slide-item[data-slidetype="matching"]:not(.qtype_ddwtos-readonly) span.draghome.placed:not(.beingdragged)',
                     questionManager.handleKeyPress)
-                .on('slidetype_matching-dragmoved', questionManager.handleDragMoved);
+                .on('slidetype_matching-dragmoved', questionManager.handleDragMoved)
+                // Tap-and-tap (mobile friendly): tap an answer to pick it up, then tap its box.
+                .on('click',
+                    '.slide-item[data-slidetype="matching"].matching-v2-active .matching-answer-stage span.draghome:not(.placed)',
+                    questionManager.handleTapDrag)
+                .on('click',
+                    '.slide-item[data-slidetype="matching"].matching-v2-active span.drop',
+                    questionManager.handleTapDrop);
         },
 
         /**
@@ -937,6 +1014,55 @@ define("slidetype_matching/ddmatching", [
                 }
                 question.handleDragStart(e);
             }
+        },
+
+        /**
+         * Tap-and-tap step 1: tap an answer in the stage to pick it up (or tap again to release).
+         * @param {Event} e the DOM event.
+         */
+        handleTapDrag: function(e) {
+            var question = questionManager.getQuestionForEvent(e);
+            if (!question) {
+                return;
+            }
+            var drag = $(e.currentTarget);
+            if (drag.hasClass('beingdragged') || drag.hasClass('placed')) {
+                return;
+            }
+            // Toggle: tapping the already-selected answer releases it.
+            if (question.tapDrag && question.tapDrag[0] === drag[0]) {
+                question.tapDrag = null;
+                drag.removeClass('mv2-tapselected');
+                question.getRoot().removeClass('matching-tapping');
+                return;
+            }
+            question.getRoot().find('.mv2-tapselected').removeClass('mv2-tapselected');
+            question.tapDrag = drag;
+            drag.addClass('mv2-tapselected');
+            question.getRoot().addClass('matching-tapping');
+            if (window.NctSlidesFX) {
+                window.NctSlidesFX.play('select');
+            }
+        },
+
+        /**
+         * Tap-and-tap step 2: tap a target box to drop the picked-up answer into it.
+         * @param {Event} e the DOM event.
+         */
+        handleTapDrop: function(e) {
+            var question = questionManager.getQuestionForEvent(e);
+            if (!question || !question.tapDrag) {
+                return;
+            }
+            var drop = $(e.currentTarget);
+            if (drop.hasClass('placed')) {
+                return; // Occupied box - ignore the tap.
+            }
+            var drag = question.tapDrag;
+            question.tapDrag = null;
+            drag.removeClass('mv2-tapselected');
+            question.getRoot().removeClass('matching-tapping');
+            question.sendDragToDrop(drag, drop);
         },
 
         /**
@@ -975,9 +1101,25 @@ define("slidetype_matching/ddmatching", [
          */
         handleDragMoved: function(e, drag, target, thisQ) {
             drag.removeClass('beingdragged');
+            // Release the drag-start width pin so the resting stage width / placed width:100%
+            // rules apply again once the chip has landed.
+            if (drag[0] && drag[0].style) {
+                drag[0].style.removeProperty('width');
+            }
             drag.css('top', '').css('left', '');
             target.after(drag);
             target.removeClass('active');
+            // Clear the chip's stage placeholder `.active`. On a bounce-home the target IS the
+            // placeholder (so it was cleared above), but on a successful drop the target is the
+            // drop and the stage placeholder KEEPS `.active` — i.e. `display:inline-block`,
+            // leaving an invisible spacer in the answer stage. Those accumulate per placed
+            // answer, shoving the next revealed chip to the right and squeezing it into a
+            // narrow, wrong-sized box. Always retire the placeholder here so the stage only
+            // ever centres the single active chip.
+            var stagePlaceholder = thisQ.getDragClone(drag);
+            if (stagePlaceholder && stagePlaceholder.length) {
+                stagePlaceholder.removeClass('active');
+            }
             if (typeof drag.data('unplaced') !== 'undefined' && drag.data('unplaced') === true) {
                 drag.removeClass('placed').addClass('unplaced');
                 drag.removeAttr('tabindex');

@@ -29,6 +29,61 @@ define("slidetype_flip/slide", ["exports", "jquery", "mod_slides/selectors", "co
     initContentDisplay() {
       this.updateBoxHeight();
       super.initContentDisplay();
+      var self = this;
+      this.scheduleFitFaces();
+      if (!this._fitResizeBound) {
+        this._fitResizeBound = function () {
+          self.scheduleFitFaces();
+        };
+        window.addEventListener('resize', this._fitResizeBound);
+      }
+    }
+    scheduleFitFaces() {
+      var self = this;
+      window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(function () {
+          self.fitFaces();
+        });
+      });
+    }
+    fitFaces() {
+      var MAX_FS = 15.5,
+        MIN_FS = 9;
+      var faces = this.element.querySelectorAll('.flip-content-block');
+      faces.forEach(function (face) {
+        var content = face.querySelector('.content');
+        if (!content) {
+          return;
+        }
+        var cs = window.getComputedStyle(face);
+        var restore = null;
+        if (cs.display === 'none') {
+          restore = {
+            display: face.style.display,
+            visibility: face.style.visibility
+          };
+          face.style.display = 'flex';
+          face.style.visibility = 'hidden';
+          cs = window.getComputedStyle(face);
+        }
+        var padTop = parseFloat(cs.paddingTop) || 20;
+        var padBottom = parseFloat(cs.paddingBottom) || 40;
+        var avail = face.clientHeight - padTop - padBottom;
+        if (avail > 24) {
+          var fs = MAX_FS;
+          content.style.fontSize = fs + 'px';
+          var guard = 0;
+          while (content.scrollHeight > avail && fs > MIN_FS && guard < 80) {
+            fs -= 0.5;
+            content.style.fontSize = fs + 'px';
+            guard++;
+          }
+        }
+        if (restore) {
+          face.style.display = restore.display;
+          face.style.visibility = restore.visibility;
+        }
+      });
     }
     updateBoxHeight() {
       const items = this.element.querySelectorAll(SELECTORS.listenItem);
@@ -89,22 +144,14 @@ define("slidetype_flip/slide", ["exports", "jquery", "mod_slides/selectors", "co
       if (window.NctSlidesFX) {
         window.NctSlidesFX.play('flip');
       }
-      const anim = cardBlock.getAnimations()?.[0];
       if (cardBlock.dataset.flipped == 'true') {
-        anim.play();
         cardBlock.classList.remove('flipped');
         cardBlock.parentNode.classList.remove('child-flipped');
-        cardBlock.dataset.flipped = false;
+        cardBlock.dataset.flipped = 'false';
       } else {
-        if (anim !== undefined) {
-          anim.play();
-        } else {
-          cardBlock.classList.add('animate__animated');
-          cardBlock.classList.add('animate__flipInX');
-        }
         cardBlock.classList.add('flipped');
         cardBlock.parentNode.classList.add('child-flipped');
-        cardBlock.dataset.flipped = true;
+        cardBlock.dataset.flipped = 'true';
       }
       self.listentime = 0;
       self.startTime = 0;
@@ -117,6 +164,7 @@ define("slidetype_flip/slide", ["exports", "jquery", "mod_slides/selectors", "co
       } else {
         self.element.classList.remove('content-flipped');
       }
+      self.scheduleFitFaces();
     }
     updateNextItem(completedIndex) {
       this.element.querySelector(SELECTORS.listenItem + '[data-index="' + completedIndex + '"]').dataset.completed = true;
@@ -192,27 +240,7 @@ define("slidetype_flip/slide", ["exports", "jquery", "mod_slides/selectors", "co
     }
     resizeAdditionalContent() {
       super.resizeAdditionalContent();
-      this.element.querySelectorAll(SELECTORS.flipCardBlock).forEach(cardBlock => {
-        var cardHeight = cardBlock.clientHeight;
-        cardBlock.dataset.flipped = 'true';
-        cardBlock.classList.add('flipped');
-        cardBlock.style.maxHeight = cardHeight + 'px';
-        const feedbackSide = cardBlock.querySelector(SELECTORS.flipFeedback);
-        if (feedbackSide) {
-          let fontSize = parseFloat(window.getComputedStyle(feedbackSide).fontSize);
-          feedbackSide.style.fontSize = `${fontSize}px`;
-          while (feedbackSide.scrollHeight <= cardHeight && fontSize < cardHeight && fontSize < 35) {
-            fontSize++;
-            feedbackSide.style.fontSize = `${fontSize}px`;
-          }
-          while (feedbackSide.scrollHeight > cardHeight && fontSize > 9) {
-            fontSize--;
-            feedbackSide.style.fontSize = `${fontSize}px`;
-          }
-        }
-        cardBlock.classList.remove('flipped');
-        cardBlock.dataset.flipped = 'false';
-      });
+      this.scheduleFitFaces();
     }
   }
   _exports.default = Slide;

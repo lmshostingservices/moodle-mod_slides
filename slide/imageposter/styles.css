@@ -22,3 +22,47 @@
     margin-bottom: 0;
 }
 /* End of Image poster slides */
+
+/* =====================================================================
+   CONSISTENT HEIGHT for image (poster) slides.
+   The rules above chain height:100% all the way down and the template's <img class="w-100">
+   forces the image to full container WIDTH, so a landscape/tall image stretches the slide well
+   past the ~540px frame every other slide type uses — producing a visible size jump when the
+   learner clicks Next. Cap the image to the same frame with generous top/bottom padding and
+   contain-scaling so it is centred and never taller than its neighbours. ID-prefixed so these
+   win over the height:100% chain above regardless of stylesheet order. (v1.6.11)
+   ===================================================================== */
+#mod-nct-slides .carousel-item.slide-imageposter.active .slide-imageposter {
+    height: auto;
+    overflow: visible;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 10px;        /* top/bottom breathing room to match other slides */
+}
+#mod-nct-slides .carousel-item.slide-imageposter.active .listen-content-item:not(.hide) {
+    height: auto;
+    justify-content: center;
+}
+#mod-nct-slides .carousel-item.slide-imageposter.active .slide-imageposter .img-block {
+    height: auto;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/* Scale the image DOWN to fit the shared frame (never crop, never stretch); override w-100. */
+#mod-nct-slides .carousel-item.slide-imageposter.active .slide-imageposter .img-block img {
+    width: auto !important;
+    height: auto;
+    max-width: 100%;
+    max-height: min(58vh, 430px);   /* fits inside the 500px content frame with the padding above */
+    object-fit: contain;
+    margin: 0 auto;
+    border-radius: 8px;
+}
+/* Fullscreen: let the poster grow to fill, still contained with padding. */
+#mod-nct-slides.slides-fullscreen .carousel-item.slide-imageposter.active .slide-imageposter img,
+#mod-nct-slides:fullscreen .carousel-item.slide-imageposter.active .slide-imageposter img {
+    max-height: calc(100vh - 120px);
+}

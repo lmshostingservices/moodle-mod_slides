@@ -23,8 +23,8 @@
  */
 
 $plugin->component = 'mod_slides';
-$plugin->version   = 2026081216;  // 2026-08-13, v1.5.0
+$plugin->version   = 2026081338;  // 2026-08-14, v1.6.12 — video force-watch nav gate: Next/dots/Finish disabled until the teacher's min-time/full-video requirement is met (replaces pause-on-next, which paused the video without advancing); pause now only fires on a completed slide change
 $plugin->requires  = 2022041900; // Moodle 4.0+
 $plugin->supported = [400, 500]; // Moodle 4.0 - 5.x
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.5.0';
+$plugin->release   = '1.6.12';

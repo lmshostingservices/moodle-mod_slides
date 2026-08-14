@@ -474,3 +474,225 @@ body.nctslidesview-onloading #page {
     .nct-slides-view-content .nctslides-content-wrapper .slides-navigation.forcenext-button .carousel-control { flex-wrap: wrap; gap: 8px; }
     .nct-slides-view-content .nctslides-content-wrapper .slides-navigation.forcenext-button .carousel-control a { min-width: 96px; padding: 10px 16px; }
 }
+
+/* Video player: fill the slide frame as a clean 16:9 rectangle (no wasted space),
+   centred with padding. Width is capped so the 16:9 height fits the fixed frame. */
+/* Constrain the video's PARENT to the target width, then the 16:9 padding on the player
+   computes against that width (padding-% is relative to the parent's width). */
+#mod-nct-slides .carousel-item.slide-video .listen-content-item:not(.hide) {
+    display: block;
+    width: 100%;
+    max-width: min(100%, calc((60vh - 60px) * 16 / 9));
+    margin: 0 auto;
+}
+#mod-nct-slides .carousel-item.slide-video .video-js {
+    width: 100%;
+    /* Robust 16:9 box using height:0 + 56.25% padding (relative to the constrained parent
+       width above). Does NOT rely on aspect-ratio, which fought Video.js's inline sizing
+       and could collapse the player to a blank box. */
+    height: 0 !important;
+    padding: 0 0 56.25% 0 !important;
+    position: relative;
+    margin: 0 auto;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 6px 16px rgba(16,24,40,.10);
+}
+#mod-nct-slides .carousel-item.slide-video .video-js .vjs-tech,
+#mod-nct-slides .carousel-item.slide-video .video-js iframe,
+#mod-nct-slides .carousel-item.slide-video .video-js video,
+#mod-nct-slides .carousel-item.slide-video .video-js > div {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+/* Finish CTA — the prev/next pill buttons are removed (the circular side arrows
+   handle navigation), so centre the remaining Finish button. */
+#mod-nct-slides .slides-navigation.forcenext-button .carousel-control {
+    justify-content: center;
+}
+#mod-nct-slides .slides-navigation.forcenext-button .carousel-control a.carousel-control-finish {
+    position: static;
+    right: auto;
+    bottom: auto;
+    margin: 8px auto 0;
+}
+
+/* =====================================================================
+   FULLSCREEN PLAYER — expand the whole player to fill the screen. Content
+   grows by layout (same %-based slide in a larger stage) so proportions are
+   preserved and drag-drop hit-testing stays accurate (no transform scaling).
+   ===================================================================== */
+#mod-nct-slides .slides-fullscreen-toggle {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 30;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #e6e9f0;
+    background: rgba(255,255,255,.92);
+    color: #1f2733;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(16,24,40,.14);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0;
+    transition: background .15s ease, transform .15s ease, box-shadow .15s ease;
+}
+#mod-nct-slides .slides-fullscreen-toggle:hover {
+    background: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(16,24,40,.18);
+}
+#mod-nct-slides .slides-fullscreen-toggle:focus-visible {
+    outline: 3px solid rgba(67,71,204,.4);
+    outline-offset: 2px;
+}
+
+/* Fallback fullscreen (browsers without the Fullscreen API, e.g. iOS Safari). */
+#mod-nct-slides.slides-fullscreen-fallback {
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+}
+
+/* Shared fullscreen presentation (native :fullscreen and the fallback class). */
+#mod-nct-slides.slides-fullscreen,
+#mod-nct-slides:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    background: #0f1220;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.2vmin;
+}
+/* The stage grows to a large, centred box; the same %-based layout fills it,
+   so every element keeps the same relative proportions, just larger. */
+#mod-nct-slides.slides-fullscreen .nctslides-content-wrapper,
+#mod-nct-slides:fullscreen .nctslides-content-wrapper {
+    width: 100%;
+    height: 100%;
+    max-width: 1600px;
+    max-height: 100%;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 24px 70px rgba(0,0,0,.5);
+    overflow: hidden;
+    display: flex;
+    align-items: stretch;
+}
+#mod-nct-slides.slides-fullscreen .slides-parent,
+#mod-nct-slides:fullscreen .slides-parent,
+#mod-nct-slides.slides-fullscreen .slides-list,
+#mod-nct-slides:fullscreen .slides-list,
+#mod-nct-slides.slides-fullscreen .nct-slides-carousel,
+#mod-nct-slides:fullscreen .nct-slides-carousel {
+    width: 100%;
+    height: 100%;
+}
+/* Nudge base text up in fullscreen so type grows with the larger stage. */
+#mod-nct-slides.slides-fullscreen .carousel-inner,
+#mod-nct-slides:fullscreen .carousel-inner {
+    font-size: clamp(1rem, 1.55vw, 1.5rem);
+    padding: clamp(16px, 3vmin, 48px);
+}
+/* Fullscreen video: FILL the screen at 16:9 (the whole point of fullscreen). The parent is
+   sized to the largest 16:9 box that fits the viewport, and the player's 56.25% padding then
+   computes against that — so the video grows to fill the screen and keeps its ratio. */
+#mod-nct-slides.slides-fullscreen .carousel-item.slide-video .listen-content-item:not(.hide),
+#mod-nct-slides:fullscreen .carousel-item.slide-video .listen-content-item:not(.hide) {
+    max-width: min(100vw, calc((100vh - 40px) * 16 / 9)) !important;
+    width: 100%;
+    margin: 0 auto;
+}
+#mod-nct-slides.slides-fullscreen .carousel-item.slide-video .video-js,
+#mod-nct-slides:fullscreen .carousel-item.slide-video .video-js {
+    max-width: none !important;   /* no small cap in fullscreen */
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* =====================================================================
+   SLIDE PLAYER HEIGHT — one consistent height for EVERY slide type so the
+   video, flip, matching and "Activity Finished" slides are all the same size.
+   Short slides centre their content vertically; a genuinely tall slide (e.g.
+   matching with 5 rows) scrolls inside the fixed frame instead of stretching it.
+   ===================================================================== */
+/* IMPORTANT: use min-height (a floor), NOT height:100% chains. A height:100% on the
+   carousel-item plus height:100% on its content is circular and collapses every slide to
+   a blank white box — do not reintroduce it. */
+#mod-nct-slides #nct-slides-carousel {
+    height: auto !important;   /* override the fixed inline containerheight; grow to content */
+    min-height: 540px;         /* consistent floor so every slide is a similar size */
+    max-height: none;
+}
+#mod-nct-slides .nctslides-content-wrapper .slides-list .carousel-inner {
+    padding: 18px;
+    min-height: 540px;
+    display: flex;
+    flex-direction: column;
+}
+/* The active slide fills the frame and centres its content vertically — via flex only,
+   no height:100% on the content itself. */
+#mod-nct-slides .nctslides-content-wrapper .slides-list .carousel-inner .carousel-item.active {
+    flex: 1 1 auto;
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+/* In fullscreen, fill the screen. */
+#mod-nct-slides.slides-fullscreen #nct-slides-carousel,
+#mod-nct-slides:fullscreen #nct-slides-carousel {
+    height: 100% !important;
+    min-height: 0;
+}
+
+/* =====================================================================
+   FLAT LOOK — remove the nested "background shapes" (the grey player box and
+   the card behind each slide's content) so content sits cleanly on the page.
+   Functional elements (flip card faces, matching question/answer cards, drop
+   zones) keep their own styling.
+   ===================================================================== */
+#mod-nct-slides .nctslides-content-wrapper .slides-list .carousel-inner {
+    background: transparent;
+    border-radius: 0;
+}
+#mod-nct-slides .nctslides-content-wrapper .carousel-item .listen-content-item.box:not(.clicktoview):not(.hide),
+#mod-nct-slides .nctslides-content-wrapper .carousel-item .slide-content-block {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+#mod-nct-slides .nctslides-content-wrapper .carousel-item .listen-content-item.box:not(.clicktoview):not(.hide):hover,
+#mod-nct-slides .nctslides-content-wrapper .carousel-item .slide-content-block:hover {
+    box-shadow: none;
+    transform: none;
+}
+
+/* =====================================================================
+   FORCE-WATCH NAV GATE — while the active video slide still requires watching
+   (teacher's "minimum time" or "full video" setting not yet met), disable the
+   forward controls: the Next arrow, the Finish button and the pagination dots.
+   The Previous arrow stays enabled so learners can still go back. The .disabled
+   look plus pointer-events:none means the click never reaches the nav handler
+   (so it can't pause the video either). Cleared automatically the moment the
+   requirement is met.
+   ===================================================================== */
+#mod-nct-slides.slides-forcelocked .carousel-control-next,
+#mod-nct-slides.slides-forcelocked .carousel-control-finish,
+#mod-nct-slides.slides-forcelocked .slides-pagination-dots .slides-dot {
+    pointer-events: none !important;
+    opacity: .4;
+    cursor: not-allowed;
+    filter: grayscale(0.3);
+}
