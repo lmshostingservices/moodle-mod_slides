@@ -458,14 +458,35 @@ class autohelper {
     /**
      * Verify the FFMPEG is installed on the server.
      *
+     * The check forks a shell and starts the ffmpeg binary, which costs tens of
+     * milliseconds. The result is memoised per request and cached in MUC for an
+     * hour, keyed by the configured path, so changing the path re-checks at once.
+     *
      * @return bool
      */
     public static function is_ffmpeg_installed() {
+        static $memo = [];
 
         $ffmpegpath = self::get_ffmpeg_path();
-        $output = shell_exec( $ffmpegpath . ' -version');
+        if (array_key_exists($ffmpegpath, $memo)) {
+            return $memo[$ffmpegpath];
+        }
 
-        return ($output && strpos($output, 'ffmpeg version') !== false);
+        $cache = \cache::make('mod_slides', 'ffmpegcheck');
+        $key = sha1($ffmpegpath);
+        $cached = $cache->get($key);
+        if ($cached !== false && isset($cached['time']) && $cached['time'] > time() - HOURSECS) {
+            return $memo[$ffmpegpath] = (bool) $cached['installed'];
+        }
+
+        $installed = false;
+        if (function_exists('shell_exec')) {
+            $output = @shell_exec($ffmpegpath . ' -version 2>&1');
+            $installed = ($output && strpos($output, 'ffmpeg version') !== false);
+        }
+
+        $cache->set($key, ['installed' => $installed, 'time' => time()]);
+        return $memo[$ffmpegpath] = $installed;
     }
 
     /**

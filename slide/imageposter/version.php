@@ -15,12 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * mod_slides file.
+ * Version details for slidetype_imageposter.
  *
- * @package    mod_slides
+ * @package    slidetype_imageposter
  * @copyright  2026 LMS-Labs
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU GPL v3 or later
  */
 
-$plugin->component = 'slidetype_imageposter';
-$plugin->version = 2026081205;
+$plugin->component    = 'slidetype_imageposter';
+$plugin->version      = 2026110100;
+$plugin->release      = '1.6.13';
+$plugin->requires     = 2022041900; // Moodle 4.0+.
+$plugin->maturity     = MATURITY_STABLE;
+$plugin->dependencies = ['mod_slides' => 2026110100];

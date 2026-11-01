@@ -3,6 +3,68 @@
 All notable changes to the Slides activity module. Versions use Moodle's
 10-digit `YYYYMMDDXX` format.
 
+## 2026110100 (v1.6.13) - 2026-11-01 — Performance + metadata
+- PERFORMANCE: settings.php ran `ffmpeg -version` via shell_exec every time
+  Moodle built the admin tree (most page loads for site admins, plus admin
+  search), adding ~30–100 ms per affected request. Settings are now only built
+  when `$ADMIN->fulltree` is set (the settings page, admin search, upgrade).
+- `autohelper::is_ffmpeg_installed()` memoises per request and caches the result
+  for one hour in a new application cache (`mod_slides/ffmpegcheck`), keyed by
+  the configured path, so changing the path re-checks immediately. The slide
+  editor form, which also calls it, loads faster as a result.
+- The FFmpeg probe now fails safe (reports "not installed") on servers where
+  `shell_exec` is disabled, instead of raising errors.
+- Removed an unused `require_once resourcelib.php` from settings.php.
+- METADATA: all seven `slidetype_*` subplugins now share the parent's version
+  (2026110100) and declare `release`, `requires` (Moodle 4.0+), `maturity` and a
+  dependency on `mod_slides`. Previously they carried mixed versions
+  (2026081205 / 2026081336 / 2026081337 / 2026081338) and no release string.
+  Corrected `@package` tags in the subplugin version files.
+- Upgrade: run Site administration → Notifications to register the new cache.
+  No schema or content changes.
+
+## 2026081338 (v1.6.12) - 2026-08-14 — Video force-watch nav gate
+- When a video slide requires watching (teacher's minimum-time or full-video
+  setting), the forward controls — Next arrow, Finish button and pagination
+  dots — are now disabled until the requirement is met. Previous stays enabled.
+  The gate clears automatically once the requirement is satisfied and follows
+  the correct slide as the learner moves back and forth.
+- Replaces the earlier pause-on-next behaviour, which paused the video without
+  advancing. Pausing now only fires on a completed slide change.
+- Navigation rewritten to use event delegation with a busy guard and safety-net
+  timeout so a transition can never get stuck.
+- slidetype_video bumped to 2026081338.
+
+## 2026081337 (v1.6.11) - 2026-08-14 — Consistent slide height
+- Image poster slides are capped to the same frame height as other slide types,
+  with contain-scaling and centring, so large or tall images no longer stretch
+  the slide and cause a size jump when clicking Next.
+- Flip cards fit the consistent-height frame: the grid takes its natural height
+  and is centred, with equal-height cards per row (previously rows stretched).
+- Flip stacking fix: a flipping card is lifted above its neighbours so a
+  top-row card no longer "disappears" behind the next row when flipped.
+- slidetype_flip bumped to 2026081337.
+
+## 2026081217 – 2026081336 (v1.5.1 – v1.6.10) - 2026-08-13 → 2026-08-14
+Per-release notes were not recorded for this range. The changes below are
+reconstructed from the shipped code and are listed by feature, not by release.
+- Fullscreen player: a toggle expands the whole player to fill the screen.
+  Content grows by layout (not transform scaling) so drag-drop hit-testing stays
+  accurate.
+- One consistent player height for every slide type (video, flip, matching,
+  "Activity Finished"). Short slides centre vertically; tall slides scroll
+  inside the frame instead of stretching it.
+- Flat look: removed the nested grey player box and per-slide card backgrounds
+  so content sits cleanly on the page. Functional elements keep their styling.
+- Matching v2: two-column layout (question card + equal-size drop rectangle),
+  shuffled answers that fly in one at a time, drag AND tap-and-tap matching,
+  and drag-over recolours the same rectangle. Accents follow the theme's
+  primary colour.
+- Matching in fullscreen: rows, boxes and text scale to the viewport.
+- Video: the Video.js hover scrim now fades out in 0.2s instead of ~1s.
+- Teacher preview runs the full progressive-reveal flow.
+- slidetype_matching bumped to 2026081336.
+
 ## 2026081216 (v1.5.0) - 2026-08-13 — Premium design + delight pass
 - Full visual makeover to a world-class e-learning look: a cohesive design-token
   system (elevated cards, soft gradients, layered shadows, rounded corners, smooth

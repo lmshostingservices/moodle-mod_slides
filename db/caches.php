@@ -28,4 +28,12 @@ $definitions = [
     'webfonts' => [
         'mode' => cache_store::MODE_APPLICATION
     ],
+    // Result of the "ffmpeg -version" probe, so it is not shelled out on every request.
+    'ffmpegcheck' => [
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true,
+        'simpledata' => true,
+        'staticacceleration' => true,
+        'staticaccelerationsize' => 5,
+    ],
 ];

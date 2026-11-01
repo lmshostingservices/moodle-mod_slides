@@ -25,9 +25,11 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-if ($hassiteconfig) {
-
-    require_once("$CFG->libdir/resourcelib.php");
+// Only build the settings when the full tree is needed (the settings page itself,
+// admin search, upgrade settings). Navigation-only builds of the admin tree happen
+// on most page loads for admins and must stay cheap: the FFmpeg probe below shells
+// out to an external binary.
+if ($hassiteconfig && $ADMIN->fulltree) {
 
     $settings->add(new admin_setting_heading('mod_slides/slidesdefaults', get_string('modeditdefaults', 'admin'), get_string('condifmodeditdefaults', 'admin')));
 
