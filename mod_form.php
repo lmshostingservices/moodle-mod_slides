@@ -76,7 +76,7 @@ class mod_slides_mod_form extends moodleform_mod {
 
         $mform = $this->_form;
 
-        $suffix = $this->get_suffix();
+        $suffix = $this->completion_suffix();
 
         $mform->addElement('checkbox', 'completionendreach' . $suffix, get_string('completionendreach', 'slides'));
         $mform->setDefault('completionendreach' . $suffix, 0);
@@ -92,14 +92,14 @@ class mod_slides_mod_form extends moodleform_mod {
      * @return bool True if one or more rules is enabled, false if none are.
      */
     public function completion_rule_enabled($data) {
-        return (!empty($data['completionendreach' . $this->get_suffix()]));
+        return (!empty($data['completionendreach' . $this->completion_suffix()]));
     }
 
     public function data_postprocessing($data) {
         global $PAGE;
 
         // Custom completion
-        $sufix = $this->get_suffix();
+        $sufix = $this->completion_suffix();
         $data->{"completionendreach"} = isset($data->{"completionendreach$sufix"}) ? 1 : 0;
     }
 
@@ -113,8 +113,19 @@ class mod_slides_mod_form extends moodleform_mod {
     public function data_preprocessing(&$defaultvalues) {
          // Custom completion
         if (isset($defaultvalues['completionendreach'])) {
-            $sufix = $this->get_suffix();
+            $sufix = $this->completion_suffix();
             $defaultvalues["completionendreach$sufix"] = $defaultvalues['completionendreach'];
         }
+    }
+
+    /**
+     * Suffix Moodle 4.3+ adds to completion fields on the bulk "Default activity completion" form.
+     *
+     * Moodle 4.0 to 4.2 have no get_suffix(), so the fields keep their plain names there.
+     *
+     * @return string
+     */
+    protected function completion_suffix(): string {
+        return method_exists($this, 'get_suffix') ? $this->get_suffix() : '';
     }
 }
