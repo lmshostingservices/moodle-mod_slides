@@ -3,6 +3,11 @@
 All notable changes to the Slides activity module. Versions use Moodle's
 10-digit `YYYYMMDDXX` format.
 
+## 2026112400 (v1.6.14) - 2026-11-24
+- Fixed: adding or editing the activity failed on Moodle 4.0 to 4.2 with "Call to undefined method ... get_suffix()". The completion settings now use the 4.3+ field suffix only where Moodle has it.
+- Fixed: Moodle 5.x showed "No subplugintypes defined ... Falling back to deprecated plugintypes value" (MDL-83705) on every upgrade, cron run and CLI command. db/subplugins.json now declares subplugintypes, and keeps plugintypes for Moodle 4.x.
+- Added a test data generator, so the activity can be created by Moodle's automated tests and by demo and course-building tools. Tests cover creating, listing, deleting, backing up and restoring the activity.
+
 ## 2026110100 (v1.6.13) - 2026-11-01 — Performance + metadata
 - PERFORMANCE: settings.php ran `ffmpeg -version` via shell_exec every time
   Moodle built the admin tree (most page loads for site admins, plus admin

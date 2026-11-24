@@ -1,4 +1,7 @@
 {
+    "subplugintypes": {
+        "slidetype": "slide"
+    },
     "plugintypes": {
         "slidetype": "mod/slides/slide"
     }
